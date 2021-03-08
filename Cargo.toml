@@ -1,5 +1,6 @@
 [package]
 name = "clitrans"
+description = "Yet another command-line translator"
 version = "0.1.0"
 authors = ["Wenxuan Zhang <wenxuangm@gmail.com>"]
 edition = "2018"
@@ -9,6 +10,7 @@ edition = "2018"
 [dependencies]
 clap = "3.0.0-beta.2"
 colored = "2.0.*"
+exitcode = "1.1.2"
 regex = "1.4.*"
 reqwest = { version = "0.11.*", features = ["json"] }
 scraper = "0.12.*"

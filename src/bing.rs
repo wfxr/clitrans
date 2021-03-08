@@ -5,43 +5,46 @@ use scraper::{ElementRef, Html, Selector};
 pub struct Translator;
 
 impl Parser for Translator {
-    fn parse(body: &str) -> Translation {
+    fn parse(body: &str) -> Option<Translation> {
         let root = Html::parse_document(&body);
-        let detail = get_detail(&root).expect("detail not found");
-        let query = get_query(&detail).expect("query not found");
-        let prons = get_prons(detail);
-        let exps = get_explanation(detail);
-        Translation { query, prons, exps }
+        let content = get_element(
+            &root,
+            r#"
+                body
+                .contentPadding
+                .b_cards
+                .b_cards
+                .lf_area
+            "#,
+        )?;
+        let query = get_text(content, ".qdef .hd_area #headword").expect("query not found");
+        let prons = get_pronounciations(content);
+        let exps = get_explanation(content);
+        Some(Translation {
+            query,
+            prons,
+            exps,
+            mexp: None,
+        })
     }
 }
 
-fn get_detail(doc: &Html) -> Option<ElementRef> {
-    let selector = Selector::parse(
-        r#"
-            body
-            .contentPadding
-            .b_cards
-            .b_cards
-            .lf_area
-            "#,
-    )
-    .unwrap();
+fn get_element<'a>(doc: &'a Html, selector: &str) -> Option<ElementRef<'a>> {
+    let selector = Selector::parse(selector).unwrap();
     doc.select(&selector).next()
 }
 
-fn get_query(detail: &ElementRef) -> Option<String> {
-    let selector = Selector::parse(
-        r#"
-            .qdef
-            .hd_area
-            #headword
-        "#,
+fn get_text(element: ElementRef, selector: &str) -> Option<String> {
+    Some(
+        element
+            .select(&Selector::parse(selector).unwrap())
+            .next()?
+            .text()
+            .collect(),
     )
-    .unwrap();
-    Some(detail.select(&selector).next()?.text().collect())
 }
 
-fn get_prons(detail: ElementRef) -> Vec<Pronunciation> {
+fn get_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
     let selector = Selector::parse(".hd_p1_1").unwrap();
     let s: String = detail
         .select(&selector)
