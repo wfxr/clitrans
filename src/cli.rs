@@ -8,9 +8,18 @@ pub use clap::Clap;
      version = env!("CARGO_PKG_VERSION"),
      global_setting(AppSettings::ColoredHelp),
 )]
-
 pub struct Opts {
     /// Text to translate
     #[clap(name = "QUERY")]
-    pub query: String,
+    pub query:  String,
+    /// Translate engine
+    #[clap(short, long, arg_enum, default_value = "bing", case_insensitive = true)]
+    pub engine: Engine,
+}
+
+#[derive(Clap, Debug, PartialEq)]
+#[allow(non_camel_case_types)]
+pub enum Engine {
+    youdao,
+    bing,
 }

@@ -1,9 +1,13 @@
 pub mod bing;
+mod util;
+pub mod youdao;
 
+pub use async_trait::async_trait;
 use colored::{Color, Colorize};
 
-pub trait Parser {
-    fn parse(content: &str) -> Option<Translation>;
+#[async_trait]
+pub trait Translate {
+    async fn translate(&self, text: &str) -> Result<Option<Translation>, Box<dyn std::error::Error>>;
 }
 
 #[derive(Debug)]
