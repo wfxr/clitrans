@@ -5,12 +5,9 @@ pub(crate) fn get_element<'a>(doc: &'a Html, selector: &str) -> Option<ElementRe
     doc.select(&selector).next()
 }
 
-pub(crate) fn get_text(element: ElementRef, selector: &str) -> Option<String> {
-    Some(
-        element
-            .select(&Selector::parse(selector).unwrap())
-            .next()?
-            .text()
-            .collect(),
-    )
+pub(crate) fn get_text(element: ElementRef, selector: &str) -> Vec<String> {
+    element
+        .select(&Selector::parse(selector).unwrap())
+        .map(|e| e.text().collect())
+        .collect()
 }

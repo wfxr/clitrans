@@ -26,7 +26,10 @@ fn parse(body: &str) -> Option<Translation> {
                 .lf_area
             "#,
     )?;
-    let query = get_text(content, ".qdef .hd_area #headword").expect("query not found");
+    let query = get_text(content, ".qdef .hd_area #headword")
+        .into_iter()
+        .next()
+        .expect("query not found");
     let prons = parse_pronounciations(content);
     let exps = parse_explanation(content);
     Some(Translation {
@@ -38,7 +41,10 @@ fn parse(body: &str) -> Option<Translation> {
 }
 
 fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
-    let s = get_text(detail, ".hd_p1_1").expect("prons not found");
+    let s = get_text(detail, ".hd_p1_1")
+        .into_iter()
+        .next()
+        .expect("prons not found");
     let re = Regex::new(
         r"(?x)
         (\s*\[(?P<py>.*?)]\s*)?
