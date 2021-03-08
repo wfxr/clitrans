@@ -9,7 +9,15 @@ pub struct Translator;
 impl Translate for Translator {
     async fn translate(&self, query: &str) -> Result<Option<Translation>, Box<dyn std::error::Error>> {
         let url = format!("http://dict.youdao.com/w/{}", query);
-        let resp = reqwest::get(&url).await?.text().await?;
+        let client = reqwest::Client::builder().build().unwrap();
+        let resp = client
+            .get(&url)
+            .header("Accept-Encoding", "gzip")
+            .header("Accept-Language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7")
+            .send()
+            .await?
+            .text()
+            .await?;
         Ok(parse(&resp))
     }
 }
