@@ -64,7 +64,7 @@ impl Translation {
                     width = prop_width + 1
                 )
             }
-            println!("")
+            println!()
         }
     }
 }

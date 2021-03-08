@@ -1,5 +1,5 @@
 [package]
-name = "cli-trans"
+name = "clitrans"
 version = "0.1.0"
 authors = ["Wenxuan Zhang <wenxuangm@gmail.com>"]
 edition = "2018"
@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 colored = "2.0.*"
-regex = "1.4.3"
+regex = "1.4.*"
 reqwest = { version = "0.11.*", features = ["json"] }
 scraper = "0.12.*"
 serde = { version = "1.0.*", features = ["derive"] }

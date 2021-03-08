@@ -1,4 +1,4 @@
-use cli_trans::{bing::Translator, Parser};
+use clitrans::{bing::Translator, Parser};
 use std::env;
 
 #[tokio::main]
