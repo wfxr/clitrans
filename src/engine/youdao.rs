@@ -1,5 +1,5 @@
-use crate::util::html::*;
-use crate::*;
+use super::*;
+use itertools::Itertools;
 use regex::Regex;
 use scraper::{ElementRef, Html, Selector};
 

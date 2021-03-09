@@ -11,10 +11,13 @@ pub use clap::Clap;
 pub struct Opts {
     /// Text to translate
     #[clap(name = "QUERY")]
-    pub query:  String,
+    pub query:   String,
     /// Translate engine
     #[clap(short, long, arg_enum, default_value = "bing", case_insensitive = true)]
-    pub engine: Engine,
+    pub engine:  Engine,
+    /// How many web phrases to display
+    #[clap(short, long, default_value = "3")]
+    pub phrases: usize,
 }
 
 #[derive(Clap, Debug, PartialEq)]
