@@ -37,12 +37,12 @@ fn parse(body: &str) -> Option<Translation> {
     let prons = parse_pronounciations(content);
     let exps = parse_explanation(content);
     let phrases = parse_phrases(content);
-    Some(Translation {
-        query,
-        prons,
-        exps,
-        phrases,
-    })
+    Some(
+        Translation::new(query)
+            .pronunciations(prons)
+            .explanations(exps)
+            .phrases(phrases),
+    )
 }
 
 fn parse_phrases(content: ElementRef) -> Vec<(String, Vec<String>)> {

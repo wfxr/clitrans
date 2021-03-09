@@ -10,6 +10,30 @@ pub struct Translation {
     pub phrases: Vec<(String, Vec<String>)>,
 }
 
+impl Translation {
+    pub fn new(query: String) -> Self {
+        Self {
+            query,
+            prons: Vec::new(),
+            exps: Vec::new(),
+            phrases: Vec::new(),
+        }
+    }
+
+    pub fn pronunciations(mut self, prons: Vec<Pronunciation>) -> Self {
+        self.prons = prons;
+        self
+    }
+    pub fn explanations(mut self, exps: Vec<Explanation>) -> Self {
+        self.exps = exps;
+        self
+    }
+    pub fn phrases(mut self, phrases: Vec<(String, Vec<String>)>) -> Self {
+        self.phrases = phrases;
+        self
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Pronunciation {
     pub region: &'static str,
