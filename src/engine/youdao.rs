@@ -1,6 +1,7 @@
 use super::*;
 use itertools::Itertools;
 use regex::Regex;
+use reqwest::Url;
 use scraper::{ElementRef, Html, Selector};
 
 pub struct Translator;
@@ -8,21 +9,21 @@ pub struct Translator;
 #[async_trait]
 impl Translate for Translator {
     async fn translate(&self, query: &str) -> Result<Option<Translation>, Box<dyn std::error::Error>> {
-        let url = format!("http://dict.youdao.com/w/{}", query);
+        let url = get_url(query)?;
         let client = reqwest::Client::builder().build().unwrap();
         let resp = client
-            .get(&url)
+            .get(url.clone())
             .header("Accept-Encoding", "gzip")
             .header("Accept-Language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7")
             .send()
             .await?
             .text()
             .await?;
-        Ok(parse(&resp))
+        Ok(parse(&url, &resp))
     }
 }
 
-fn parse(body: &str) -> Option<Translation> {
+fn parse(url: &Url, body: &str) -> Option<Translation> {
     let root = Html::parse_document(&body);
     let content = get_element(&root, "#results-contents")?;
     let query = get_text(content, "#phrsListTab > h2 > .keyword")
@@ -38,11 +39,15 @@ fn parse(body: &str) -> Option<Translation> {
     let exps = parse_explanation(content);
     let phrases = parse_phrases(content);
     Some(
-        Translation::new(query)
+        Translation::new(query, url.to_string())
             .pronunciations(prons)
             .explanations(exps)
             .phrases(phrases),
     )
+}
+
+fn get_url(query: &str) -> Result<Url, Box<dyn std::error::Error>> {
+    Ok(Url::parse(&format!("http://dict.youdao.com/w/{}", query))?)
 }
 
 fn parse_phrases(content: ElementRef) -> Vec<(String, Vec<String>)> {

@@ -5,15 +5,17 @@ use itertools::Itertools;
 #[derive(Debug, Clone)]
 pub struct Translation {
     pub query:   String,
+    pub url:     String,
     pub prons:   Vec<Pronunciation>,
     pub exps:    Vec<Explanation>,
     pub phrases: Vec<(String, Vec<String>)>,
 }
 
 impl Translation {
-    pub fn new(query: String) -> Self {
+    pub fn new(query: String, url: String) -> Self {
         Self {
             query,
+            url,
             prons: Vec::new(),
             exps: Vec::new(),
             phrases: Vec::new(),
@@ -90,6 +92,7 @@ impl Translation {
 
         self.print_explanations(indent, &exps);
         self.print_phrases(&layout, indent);
+        self.print_link(indent);
     }
 
     fn print_query(&self) {
@@ -141,14 +144,24 @@ impl Translation {
                 .filter(|(_, exps)| !exps.is_empty())
                 .take(layout.phrases)
                 .map(|(phrase, exps)| {
-                    format!("{:>indent$}  {} {}\n", "", "*", phrase.cyan())
+                    format!("{:>indent$}  {} {}\n", "", "*".cyan(), phrase.cyan())
                         + &exps
                             .iter()
-                            .map(|exp| format!("{:>indent$}    - {}", "", exp.purple()))
+                            .map(|exp| format!("{:>indent$}    {} {}", "", "-".cyan(), exp.cyan()))
                             .join("\n")
                 })
                 .join("\n\n");
             println!("\n{}\n{}", "Web Phrases:".cyan(), buf);
         }
+    }
+
+    fn print_link(&self, indent: usize) {
+        println!(
+            "\n{}\n{:>indent$}  {} {}",
+            "Source URL:".blue(),
+            "",
+            "*".blue(),
+            self.url.blue()
+        );
     }
 }

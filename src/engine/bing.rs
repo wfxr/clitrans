@@ -1,19 +1,20 @@
 use super::*;
 use regex::Regex;
+use reqwest::Url;
 use scraper::{ElementRef, Html, Selector};
 
 pub struct Translator;
 
 #[async_trait]
 impl Translate for Translator {
-    async fn translate(&self, query: &str) -> Result<Option<Translation>, Box<dyn std::error::Error>> {
-        let url = format!("https://cn.bing.com/dict/search?q={}&mkt={}", query, "zh-cn");
-        let resp = reqwest::get(&url).await?.text().await?;
-        Ok(parse(&resp))
+    async fn translate(&self, input: &str) -> Result<Option<Translation>, Box<dyn std::error::Error>> {
+        let url = get_url(input)?;
+        let resp = reqwest::get(url.clone()).await?.text().await?;
+        Ok(parse(url, &resp))
     }
 }
 
-fn parse(body: &str) -> Option<Translation> {
+fn parse(url: Url, body: &str) -> Option<Translation> {
     let root = Html::parse_document(&body);
     let content = get_element(
         &root,
@@ -31,7 +32,18 @@ fn parse(body: &str) -> Option<Translation> {
         .expect("query not found");
     let prons = parse_pronounciations(content);
     let exps = parse_explanation(content);
-    Some(Translation::new(query).pronunciations(prons).explanations(exps))
+    Some(
+        Translation::new(query, url.to_string())
+            .pronunciations(prons)
+            .explanations(exps),
+    )
+}
+
+fn get_url(query: &str) -> Result<Url, Box<dyn std::error::Error>> {
+    Ok(Url::parse(&format!(
+        "https://cn.bing.com/dict/search?q={}&mkt={}",
+        query, "zh-cn"
+    ))?)
 }
 
 fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
