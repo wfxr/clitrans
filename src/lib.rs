@@ -14,9 +14,10 @@ pub trait Translate {
 
 #[derive(Debug)]
 pub struct Translation {
-    query: String,
-    prons: Vec<Pronunciation>,
-    exps:  Vec<Explanation>,
+    query:   String,
+    prons:   Vec<Pronunciation>,
+    exps:    Vec<Explanation>,
+    phrases: Vec<(String, Vec<String>)>,
 }
 
 #[derive(Debug)]
@@ -81,26 +82,47 @@ impl Translation {
             })
             .collect();
 
+        let tag_width = exps
+            .iter()
+            .map(|&(_, tag, _)| UnicodeWidthStr::width_cjk(tag))
+            .max()
+            .unwrap_or(0);
         if !exps.is_empty() {
-            println!();
-            let tag_width = exps
+            let buf = exps
+                .into_iter()
+                .map(|(color, tag, itmes)| {
+                    itmes
+                        .iter()
+                        .enumerate()
+                        .map(|(i, item)| {
+                            let title = if i == 0 { tag } else { "" };
+                            format!(
+                                "{:>width$}  {} {}",
+                                title.color(color).italic(),
+                                "*".color(color),
+                                item.color(color),
+                                width = tag_width
+                            )
+                        })
+                        .join("\n")
+                })
+                .join("\n\n");
+            println!("\n{}", buf);
+        }
+
+        if !self.phrases.is_empty() {
+            let buf = self
+                .phrases
                 .iter()
-                .map(|&(_, tag, _)| UnicodeWidthStr::width_cjk(tag))
-                .max()
-                .unwrap_or(0);
-            for (color, tag, itmes) in exps {
-                for (i, item) in itmes.iter().enumerate() {
-                    let title = if i == 0 { tag } else { "" };
-                    println!(
-                        "{:>width$}  {} {}",
-                        title.color(color).italic(),
-                        "*".color(color),
-                        item.color(color),
-                        width = tag_width
-                    )
-                }
-                println!()
-            }
+                .map(|(phrase, exps)| {
+                    format!("{:>width$}  {} {}\n", "", "*", phrase, width = tag_width)
+                        + &exps
+                            .iter()
+                            .map(|exp| format!("{:>width$}    - {}", "", exp.purple(), width = tag_width))
+                            .join("\n")
+                })
+                .join("\n\n");
+            println!("\n{}\n{}", "Web Phrases:".cyan(), buf);
         }
     }
 }

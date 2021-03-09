@@ -36,7 +36,29 @@ fn parse(body: &str) -> Option<Translation> {
         });
     let prons = parse_pronounciations(content);
     let exps = parse_explanation(content);
-    Some(Translation { query, prons, exps })
+    let phrases = parse_phrases(content);
+    Some(Translation {
+        query,
+        prons,
+        exps,
+        phrases,
+    })
+}
+
+fn parse_phrases(content: ElementRef) -> Vec<(String, Vec<String>)> {
+    let mut rs = vec![];
+    for item in content.select(&Selector::parse("#webPhrase > p.wordGroup").unwrap()) {
+        if let Some(title) = get_text(item, ".contentTitle").into_iter().next() {
+            let text: String = item.text().collect();
+            let items = text
+                .replacen(&title, "", 1)
+                .split(&[';', '；'][..])
+                .map(|s| s.split_whitespace().join(" "))
+                .collect();
+            rs.push((title, items));
+        }
+    }
+    rs
 }
 
 fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
