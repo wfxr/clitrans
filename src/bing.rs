@@ -32,12 +32,7 @@ fn parse(body: &str) -> Option<Translation> {
         .expect("query not found");
     let prons = parse_pronounciations(content);
     let exps = parse_explanation(content);
-    Some(Translation {
-        query,
-        prons,
-        exps,
-        mexp: None,
-    })
+    Some(Translation { query, prons, exps })
 }
 
 fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {

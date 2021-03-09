@@ -15,7 +15,6 @@ pub struct Translation {
     query: String,
     prons: Vec<Pronunciation>,
     exps:  Vec<Explanation>,
-    mexp:  Option<String>,
 }
 
 #[derive(Debug)]
@@ -70,11 +69,6 @@ impl Translation {
                 )
             }
             println!()
-        }
-
-        if let Some(exp) = &self.mexp {
-            println!("Machine Translation");
-            println!("{}", exp.cyan());
         }
     }
 }

@@ -28,15 +28,15 @@ fn parse(body: &str) -> Option<Translation> {
     let query = get_text(content, "#phrsListTab > h2 > .keyword")
         .into_iter()
         .next()
-        .expect("query not found");
+        .unwrap_or_else(|| {
+            get_text(content, "#fanyiToggle > div > p:nth-child(1)")
+                .into_iter()
+                .next()
+                .expect("query not found")
+        });
     let prons = parse_pronounciations(content);
     let exps = parse_explanation(content);
-    Some(Translation {
-        query,
-        prons,
-        exps,
-        mexp: None,
-    })
+    Some(Translation { query, prons, exps })
 }
 
 fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
@@ -73,6 +73,7 @@ fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
 fn parse_explanation(detail: ElementRef) -> Vec<Explanation> {
     let mut exps = parse_explanation_en(detail);
     exps.extend(parse_explanation_cn(detail));
+    exps.extend(parse_explanation_machine(detail));
     exps
 }
 
@@ -111,4 +112,14 @@ fn parse_explanation_cn(detail: ElementRef) -> Vec<Explanation> {
         }
     }
     exps
+}
+
+fn parse_explanation_machine(detail: ElementRef) -> Option<Explanation> {
+    let value = get_text(detail, "#fanyiToggle > div > p:nth-child(2)")
+        .into_iter()
+        .next()?;
+    Some(Explanation {
+        pos:    "Machine".to_owned(),
+        values: vec![value],
+    })
 }
