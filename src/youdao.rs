@@ -103,13 +103,18 @@ fn parse_explanation_cn(detail: ElementRef) -> Vec<Explanation> {
     let mut exps = vec![];
     let selector = Selector::parse("#phrsListTab > div.trans-container > ul > p").unwrap();
     for record in detail.select(&selector) {
-        let pos = get_text(record, "span:nth-child(1)").into_iter().next();
-        if let Some(pos) = pos {
-            exps.push(Explanation {
-                pos,
-                values: get_text(record, "span .search-js"),
-            });
+        let values = get_text(record, "span .search-js");
+        if values.is_empty() {
+            continue;
         }
+        let pos = get_text(record, "span:nth-child(1):not(.contentTitle)")
+            .into_iter()
+            .next()
+            .unwrap_or_else(|| "Phrase".to_owned());
+        exps.push(Explanation {
+            pos,
+            values: get_text(record, "span .search-js"),
+        });
     }
     exps
 }
@@ -119,7 +124,7 @@ fn parse_explanation_machine(detail: ElementRef) -> Option<Explanation> {
         .into_iter()
         .next()?;
     Some(Explanation {
-        pos:    "Machine".to_owned(),
+        pos:    "Machine.".to_owned(),
         values: vec![value],
     })
 }
