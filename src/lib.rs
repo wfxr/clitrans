@@ -5,6 +5,7 @@ pub mod youdao;
 pub use async_trait::async_trait;
 use colored::{Color, Colorize};
 use itertools::Itertools;
+use unicode_width::UnicodeWidthStr;
 
 #[async_trait]
 pub trait Translate {
@@ -38,8 +39,16 @@ impl Pronunciation {
 
 #[derive(Debug)]
 pub struct Explanation {
-    pos:    String, // TODO: refactor as enum
-    values: Vec<String>,
+    tag:   ExpTag,
+    items: Vec<String>,
+}
+
+#[derive(Debug)]
+pub enum ExpTag {
+    Web,
+    Machine,
+    Phrase,
+    Pos(String),
 }
 
 impl Translation {
@@ -52,27 +61,42 @@ impl Translation {
                     .iter()
                     .map(|pron| &pron.value)
                     .unique()
-                    .map(|s| format!("/{}/", s.yellow().bold()))
+                    .map(|s| format!("/{}/", s.yellow()))
                     .join(", ")
             );
         }
 
-        let pos_width = self.exps.iter().map(|exp| exp.pos.len()).max().unwrap_or(0);
-        if !self.exps.is_empty() {
-            println!();
-            for exp in &self.exps {
-                let color = match exp.pos.as_str() {
-                    "Web." => Color::Magenta,
-                    _ => Color::Green,
+        let exps: Vec<_> = self
+            .exps
+            .iter()
+            .map(|exp| {
+                #[rustfmt::skip]
+                let (color, tag) = match &exp.tag {
+                    ExpTag::Web     => (Color::Magenta,     "Web."),
+                    ExpTag::Machine => (Color::Cyan,        "Machine."),
+                    ExpTag::Phrase  => (Color::Green,       "Phrase."),
+                    ExpTag::Pos(s)  => (Color::BrightGreen, s.as_str()),
                 };
-                for (i, item) in exp.values.iter().enumerate() {
-                    let title = if i == 0 { &exp.pos } else { "" };
+                (color, tag, &exp.items)
+            })
+            .collect();
+
+        if !exps.is_empty() {
+            println!();
+            let tag_width = exps
+                .iter()
+                .map(|&(_, tag, _)| UnicodeWidthStr::width_cjk(tag))
+                .max()
+                .unwrap_or(0);
+            for (color, tag, itmes) in exps {
+                for (i, item) in itmes.iter().enumerate() {
+                    let title = if i == 0 { tag } else { "" };
                     println!(
                         "{:>width$}  {} {}",
-                        title.italic().color(color),
+                        title.color(color).italic(),
                         "*".color(color),
                         item.color(color),
-                        width = pos_width
+                        width = tag_width
                     )
                 }
                 println!()

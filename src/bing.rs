@@ -70,15 +70,14 @@ fn parse_explanation(detail: ElementRef) -> Vec<Explanation> {
     let s_def = Selector::parse(".def").unwrap();
     let mut exps = vec![];
     for li in detail.select(&s_li) {
-        let mut pos: String = li.select(&s_pos).next().expect("pos not found").text().collect();
+        let pos: String = li.select(&s_pos).next().expect("pos not found").text().collect();
         let def: String = li.select(&s_def).next().expect("def not found").text().collect();
-        if pos == "网络" {
-            pos = "Web.".to_owned()
-        }
-        exps.push(Explanation {
-            pos,
-            values: def.split(&['；', ';'][..]).map(|v| v.trim().to_owned()).collect(),
-        });
+        let tag = match pos.trim() {
+            "网络" => ExpTag::Web,
+            s => ExpTag::Pos(s.to_owned()),
+        };
+        let items = def.split(&['；', ';'][..]).map(|v| v.trim().to_owned()).collect();
+        exps.push(Explanation { tag, items });
     }
     exps
 }

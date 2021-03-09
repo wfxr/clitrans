@@ -85,16 +85,17 @@ fn parse_explanation_en(detail: ElementRef) -> Vec<Explanation> {
     for li in detail.select(&selector) {
         let text: String = li.text().collect();
         if let Some(caps) = re.captures(&text) {
-            let pos = caps.name("pos").map(|s| s.as_str()).unwrap_or("Phrase.");
             if let Some(exp) = caps.name("exp") {
-                exps.push(Explanation {
-                    pos:    pos.trim().to_owned(),
-                    values: exp
-                        .as_str()
-                        .split(&['；', ';'][..])
-                        .map(|v| v.trim().to_owned())
-                        .collect(),
-                });
+                let tag = caps
+                    .name("pos")
+                    .map(|pos| ExpTag::Pos(pos.as_str().trim().to_owned()))
+                    .unwrap_or(ExpTag::Phrase);
+                let items = exp
+                    .as_str()
+                    .split(&['；', ';'][..])
+                    .map(|v| v.trim().to_owned())
+                    .collect();
+                exps.push(Explanation { tag, items });
             }
         }
     }
@@ -109,14 +110,13 @@ fn parse_explanation_cn(detail: ElementRef) -> Vec<Explanation> {
         if values.is_empty() {
             continue;
         }
-        let pos = get_text(record, "span:nth-child(1):not(.contentTitle)")
+        let tag = get_text(record, "span:nth-child(1):not(.contentTitle)")
             .into_iter()
             .next()
-            .unwrap_or_else(|| "Phrase.".to_owned());
-        exps.push(Explanation {
-            pos,
-            values: get_text(record, "span .search-js"),
-        });
+            .map(ExpTag::Pos)
+            .unwrap_or(ExpTag::Phrase);
+        let items = get_text(record, "span .search-js");
+        exps.push(Explanation { tag, items });
     }
     exps
 }
@@ -126,16 +126,16 @@ fn parse_explanation_machine(detail: ElementRef) -> Option<Explanation> {
         .into_iter()
         .next()?;
     Some(Explanation {
-        pos:    "Machine.".to_owned(),
-        values: vec![value],
+        tag:   ExpTag::Machine,
+        items: vec![value],
     })
 }
 
 fn parse_explanation_web(detail: ElementRef) -> Vec<Explanation> {
     let texts = get_text(detail, "#tWebTrans div.wt-container .title");
-    let values = texts.iter().map(|s| s.split_whitespace().join(" ")).collect();
+    let items = texts.iter().map(|s| s.split_whitespace().join(" ")).collect();
     vec![Explanation {
-        pos: "Web.".to_owned(),
-        values,
+        tag: ExpTag::Web,
+        items,
     }]
 }
