@@ -81,8 +81,8 @@ fn parse_explanation(detail: ElementRef) -> Vec<Explanation> {
             pos = "Web.".to_owned()
         }
         exps.push(Explanation {
-            prop:  pos,
-            value: def.split(&['；', ';'][..]).map(|v| v.trim().to_owned()).collect(),
+            pos,
+            values: def.split(&['；', ';'][..]).map(|v| v.trim().to_owned()).collect(),
         });
     }
     exps

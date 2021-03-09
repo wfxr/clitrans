@@ -38,8 +38,8 @@ impl Pronunciation {
 
 #[derive(Debug)]
 pub struct Explanation {
-    prop:  String,
-    value: Vec<String>,
+    pos:    String,
+    values: Vec<String>,
 }
 
 impl Translation {
@@ -53,20 +53,20 @@ impl Translation {
         println!();
 
         println!();
-        let prop_width = self.exps.iter().map(|exp| exp.prop.len()).max().unwrap_or(0);
+        let pos_width = self.exps.iter().map(|exp| exp.pos.len()).max().unwrap_or(0);
         for exp in &self.exps {
-            let color = match exp.prop.as_str() {
+            let color = match exp.pos.as_str() {
                 "Web." => Color::Magenta,
                 _ => Color::Green,
             };
-            for (i, item) in exp.value.iter().enumerate() {
-                let title = if i == 0 { &exp.prop } else { "" };
+            for (i, item) in exp.values.iter().enumerate() {
+                let title = if i == 0 { &exp.pos } else { "" };
                 println!(
                     "{:>width$}  {} {}",
                     title.italic().color(color),
                     "*".color(color),
                     item.color(color),
-                    width = prop_width + 1
+                    width = pos_width + 1
                 )
             }
             println!()

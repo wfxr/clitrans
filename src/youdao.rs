@@ -39,7 +39,6 @@ fn parse(body: &str) -> Option<Translation> {
     })
 }
 
-// TODO: Fix pinyin <21-03-08 19:57, Wenxuan Zhang> //
 fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
     let mut prons = vec![];
     if let Some(s) = get_text(detail, "#phrsListTab > h2 > div.baav").get(0) {
@@ -78,16 +77,16 @@ fn parse_explanation(detail: ElementRef) -> Vec<Explanation> {
 }
 
 fn parse_explanation_en(detail: ElementRef) -> Vec<Explanation> {
-    let s_li = Selector::parse("#phrsListTab > div.trans-container > ul > li").unwrap();
-    let re = Regex::new(r#"(?P<prop>\w+\.)(?P<exp>.*)"#).unwrap();
+    let selector = Selector::parse("#phrsListTab > div.trans-container > ul > li").unwrap();
+    let re = Regex::new(r#"(?P<pos>\w+\.)(?P<exp>.*)"#).unwrap();
     let mut exps = vec![];
-    for li in detail.select(&s_li) {
+    for li in detail.select(&selector) {
         let text: String = li.text().collect();
         if let Some(caps) = re.captures(&text) {
-            if let (Some(prop), Some(exp)) = (caps.name("prop"), caps.name("exp")) {
+            if let (Some(pos), Some(exp)) = (caps.name("pos"), caps.name("exp")) {
                 exps.push(Explanation {
-                    prop:  prop.as_str().trim().to_owned(),
-                    value: exp
+                    pos:    pos.as_str().trim().to_owned(),
+                    values: exp
                         .as_str()
                         .split(&['；', ';'][..])
                         .map(|v| v.trim().to_owned())
@@ -99,15 +98,17 @@ fn parse_explanation_en(detail: ElementRef) -> Vec<Explanation> {
     exps
 }
 
-// TODO: fix bug "开始" <21-03-08 23:41, Wenxuan Zhang> //
 fn parse_explanation_cn(detail: ElementRef) -> Vec<Explanation> {
-    let mut it = get_text(detail, "#phrsListTab > div.trans-container > ul > p > span")
-        .into_iter()
-        .map(|s| s.trim_matches(&[';', '；', ' ', '\n'][..]).to_owned());
     let mut exps = vec![];
-    if let Some(prop) = it.next() {
-        let values = it.collect();
-        exps.push(Explanation { prop, value: values });
+    let selector = Selector::parse("#phrsListTab > div.trans-container > ul > p").unwrap();
+    for record in detail.select(&selector) {
+        let pos = get_text(record, "span:nth-child(1)").into_iter().next();
+        if let Some(pos) = pos {
+            exps.push(Explanation {
+                pos,
+                values: get_text(record, "span .search-js"),
+            });
+        }
     }
     exps
 }
