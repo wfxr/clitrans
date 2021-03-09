@@ -79,14 +79,15 @@ fn parse_explanation(detail: ElementRef) -> Vec<Explanation> {
 
 fn parse_explanation_en(detail: ElementRef) -> Vec<Explanation> {
     let selector = Selector::parse("#phrsListTab > div.trans-container > ul > li").unwrap();
-    let re = Regex::new(r#"(?P<pos>\w+\.)(?P<exp>.*)"#).unwrap();
+    let re = Regex::new(r#"(?P<pos>\w+\.)?(?P<exp>.*)"#).unwrap();
     let mut exps = vec![];
     for li in detail.select(&selector) {
         let text: String = li.text().collect();
         if let Some(caps) = re.captures(&text) {
-            if let (Some(pos), Some(exp)) = (caps.name("pos"), caps.name("exp")) {
+            let pos = caps.name("pos").map(|s| s.as_str()).unwrap_or("Phrase.");
+            if let Some(exp) = caps.name("exp") {
                 exps.push(Explanation {
-                    pos:    pos.as_str().trim().to_owned(),
+                    pos:    pos.trim().to_owned(),
                     values: exp
                         .as_str()
                         .split(&['；', ';'][..])
@@ -110,7 +111,7 @@ fn parse_explanation_cn(detail: ElementRef) -> Vec<Explanation> {
         let pos = get_text(record, "span:nth-child(1):not(.contentTitle)")
             .into_iter()
             .next()
-            .unwrap_or_else(|| "Phrase".to_owned());
+            .unwrap_or_else(|| "Phrase.".to_owned());
         exps.push(Explanation {
             pos,
             values: get_text(record, "span .search-js"),
