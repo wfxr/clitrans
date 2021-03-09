@@ -74,6 +74,7 @@ fn parse_explanation(detail: ElementRef) -> Vec<Explanation> {
     let mut exps = parse_explanation_en(detail);
     exps.extend(parse_explanation_cn(detail));
     exps.extend(parse_explanation_machine(detail));
+    exps.extend(parse_explanation_web(detail));
     exps
 }
 
@@ -128,4 +129,13 @@ fn parse_explanation_machine(detail: ElementRef) -> Option<Explanation> {
         pos:    "Machine.".to_owned(),
         values: vec![value],
     })
+}
+
+fn parse_explanation_web(detail: ElementRef) -> Vec<Explanation> {
+    let texts = get_text(detail, "#tWebTrans div.wt-container .title");
+    let values = texts.iter().map(|s| s.split_whitespace().join(" ")).collect();
+    vec![Explanation {
+        pos: "Web.".to_owned(),
+        values,
+    }]
 }

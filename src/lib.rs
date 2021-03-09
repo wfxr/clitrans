@@ -38,7 +38,7 @@ impl Pronunciation {
 
 #[derive(Debug)]
 pub struct Explanation {
-    pos:    String,
+    pos:    String, // TODO: refactor as enum
     values: Vec<String>,
 }
 
