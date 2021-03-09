@@ -54,6 +54,7 @@ fn parse_phrases(content: ElementRef) -> Vec<(String, Vec<String>)> {
                 .replacen(&title, "", 1)
                 .split(&[';', '；'][..])
                 .map(|s| s.split_whitespace().join(" "))
+                .unique()
                 .collect();
             rs.push((title, items));
         }

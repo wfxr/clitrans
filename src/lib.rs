@@ -70,6 +70,7 @@ impl Translation {
         let exps: Vec<_> = self
             .exps
             .iter()
+            .filter(|exp| !exp.items.is_empty())
             .map(|exp| {
                 #[rustfmt::skip]
                 let (color, tag) = match &exp.tag {
@@ -114,8 +115,9 @@ impl Translation {
             let buf = self
                 .phrases
                 .iter()
+                .filter(|(_, exps)| !exps.is_empty())
                 .map(|(phrase, exps)| {
-                    format!("{:>width$}  {} {}\n", "", "*", phrase, width = tag_width)
+                    format!("{:>width$}  {} {}\n", "", "*", phrase.cyan(), width = tag_width)
                         + &exps
                             .iter()
                             .map(|exp| format!("{:>width$}    - {}", "", exp.purple(), width = tag_width))
