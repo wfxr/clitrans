@@ -1,0 +1,85 @@
+#compdef clitrans
+
+autoload -U is-at-least
+
+_clitrans() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+'-e+[Translate engine]' \
+'--engine=[Translate engine]' \
+'--explanations=[How many explanations to display]' \
+'--phonetics=[How many phonetics to display]' \
+'-p+[How many web phrases to display]' \
+'--phrases=[How many web phrases to display]' \
+'-a+[Play pronounce audio (if any)]' \
+'--audio=[Play pronounce audio (if any)]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::QUERY -- Text to translate:_files' \
+":: :_clitrans_commands" \
+"*::: :->clitrans" \
+&& ret=0
+    case $state in
+    (clitrans)
+        words=($line[2] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:clitrans-command-$line[2]:"
+        case $line[2] in
+            (completion)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':shell -- Target shell name:(zsh bash fish powershell elvish)' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+}
+
+(( $+functions[_clitrans_commands] )) ||
+_clitrans_commands() {
+    local commands; commands=(
+        "completion:Generate shell completion file" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'clitrans commands' commands "$@"
+}
+(( $+functions[_clitrans__completion_commands] )) ||
+_clitrans__completion_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'clitrans completion commands' commands "$@"
+}
+(( $+functions[_clitrans__help_commands] )) ||
+_clitrans__help_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'clitrans help commands' commands "$@"
+}
+
+_clitrans "$@"

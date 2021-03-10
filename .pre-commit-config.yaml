@@ -31,14 +31,14 @@ repos:
     always_run: true
     entry: cargo clippy
     args: ["--", "-D", "warnings", "-Z", "unstable-options"]
-  # - id: update-completions
-  #   name: update shell completions
-  #   pass_filenames: false
-  #   language: system
-  #   always_run: true
-  #   entry: >
-  #     sh -c '
-  #       touch build.rs &&
-  #       SHELL_COMPLETIONS_DIR=completions cargo build &&
-  #       git add completions
-  #     '
+  - id: update-completions
+    name: update shell completions
+    pass_filenames: false
+    language: system
+    always_run: true
+    entry: >
+      sh -c '
+        touch build.rs &&
+        SHELL_COMPLETIONS_DIR=completions cargo build &&
+        git add completions
+      '
