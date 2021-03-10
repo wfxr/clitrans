@@ -16,26 +16,21 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          # { os, target, cargo-options, features, use-cross, toolchain }
-          - { os: ubuntu-latest  , target: arm-unknown-linux-gnueabihf , use-cross: use-cross }
-          - { os: ubuntu-18.04   , target: aarch64-unknown-linux-gnu   , use-cross: use-cross }
-          - { os: ubuntu-18.04   , target: i686-unknown-linux-gnu      , use-cross: use-cross }
-          - { os: ubuntu-18.04   , target: i686-unknown-linux-musl     , use-cross: use-cross }
-          - { os: ubuntu-18.04   , target: x86_64-unknown-linux-gnu    , use-cross: use-cross }
-          - { os: ubuntu-18.04   , target: x86_64-unknown-linux-musl   , use-cross: use-cross }
-          - { os: ubuntu-16.04   , target: x86_64-unknown-linux-gnu    , use-cross: use-cross }
-          - { os: macos-latest   , target: x86_64-apple-darwin                                }
-          # - { os: windows-latest , target: i686-pc-windows-msvc                               }
-          - { os: windows-latest , target: x86_64-pc-windows-msvc                             }
+          - { os: ubuntu-18.04   , target: x86_64-unknown-linux-gnu  }
+          - { os: macos-latest   , target: x86_64-apple-darwin       }
+          - { os: windows-latest , target: x86_64-pc-windows-msvc    }
     steps:
     - name: Git checkout
       uses: actions/checkout@v1
-    - name: Install prerequisites
+    - name: Install audio dependencies
       shell: bash
       run: |
-        case ${{ matrix.job.target }} in
-          arm-unknown-linux-gnueabihf) sudo apt-get -y update; sudo apt-get -y install gcc-arm-linux-gnueabihf libasound2-dev ;;
-          aarch64-unknown-linux-gnu)   sudo apt-get -y update; sudo apt-get -y install gcc-aarch64-linux-gnu   libasound2-dev ;;
+        case ${{ matrix.job.os }} in
+          ubuntu-*)
+              sudo apt-get -y update
+              sudo apt-get -y install pkg-config
+              sudo apt-get -y install libasound2-dev
+              ;;
         esac
     - name: Initialize workflow variables
       id: vars
@@ -128,11 +123,6 @@ jobs:
         case ${{ matrix.job.target }} in arm-*) unset JOB_DO_TESTING ;; esac;
         echo set-output name=JOB_DO_TESTING::${JOB_DO_TESTING:-<empty>/false}
         echo ::set-output name=JOB_DO_TESTING::${JOB_DO_TESTING}
-        # # * test only library unit tests and binary for arm-type targets
-        unset CARGO_TEST_OPTIONS
-        # unset CARGO_TEST_OPTIONS ; case ${{ matrix.job.target }} in arm-* | aarch64-*) CARGO_TEST_OPTIONS="--lib --bin ${PROJECT_NAME}" ;; esac;
-        echo set-output name=CARGO_TEST_OPTIONS::${CARGO_TEST_OPTIONS}
-        echo ::set-output name=CARGO_TEST_OPTIONS::${CARGO_TEST_OPTIONS}
         # * executable for `strip`?
         STRIP="strip" ; case ${{ matrix.job.target }} in arm-unknown-linux-gnueabihf) STRIP="arm-linux-gnueabihf-strip" ;; aarch64-unknown-linux-gnu) STRIP="aarch64-linux-gnu-strip" ;; *-pc-windows-msvc) STRIP="" ;; esac;
         echo set-output name=STRIP::${STRIP}
@@ -144,34 +134,40 @@ jobs:
         mkdir -p '${{ steps.vars.outputs.STAGING }}/${{ steps.vars.outputs.PKG_BASENAME }}'
         mkdir -p '${{ steps.vars.outputs.STAGING }}/${{ steps.vars.outputs.PKG_BASENAME }}/completions'
         mkdir -p '${{ steps.vars.outputs.STAGING }}/dpkg'
-
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+    - name: Setup Toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: ${{ steps.vars.outputs.TOOLCHAIN }}
+        override: true
     - name: Info
       shell: bash
       run: |
-        gcc --version || true
         rustup -V
         rustup toolchain list
         rustup default
         cargo -V
         rustc -V
     - name: Build
-      uses: actions-rs/cargo@v1
-      with:
-        use-cross: ${{ steps.vars.outputs.CARGO_USE_CROSS }}
-        command: build
-        args: --release --target=${{ matrix.job.target }} ${{ matrix.job.cargo-options }}
+      shell: bash
+      run: |
+        cargo build --locked --release
     - name: Test
-      uses: actions-rs/cargo@v1
-      with:
-        use-cross: ${{ steps.vars.outputs.CARGO_USE_CROSS }}
-        command: test
-        args: --target=${{ matrix.job.target }} ${{ steps.vars.outputs.CARGO_TEST_OPTIONS}} ${{ matrix.job.cargo-options }}
+      shell: bash
+      run: |
+        cargo test --locked
     - name: Test run
-      uses: actions-rs/cargo@v1
-      with:
-        use-cross: ${{ steps.vars.outputs.CARGO_USE_CROSS }}
-        command: run
-        args: Cargo.toml
+      shell: bash
+      run: |
+        cargo run -- --help
+        cargo run -- hello
     - name: Strip binary
       shell: bash
       run: |
