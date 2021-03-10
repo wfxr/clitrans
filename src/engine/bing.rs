@@ -9,7 +9,15 @@ pub struct Translator;
 impl Translate for Translator {
     async fn translate(&self, input: &str) -> Result<Option<Translation>, Box<dyn std::error::Error>> {
         let url = get_url(input)?;
-        let resp = reqwest::get(url.clone()).await?.text().await?;
+        let client = reqwest::Client::builder().build().unwrap();
+        let resp = client
+            .get(url.clone())
+            .header("Accept-Encoding", "gzip")
+            .header("Accept-Language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7")
+            .send()
+            .await?
+            .text()
+            .await?;
         Ok(parse(url, &resp))
     }
 }
@@ -19,12 +27,12 @@ fn parse(url: Url, body: &str) -> Option<Translation> {
     let content = get_element(
         &root,
         r#"
-                body
-                .contentPadding
-                .b_cards
-                .b_cards
-                .lf_area
-            "#,
+            body
+            .contentPadding
+            .b_cards
+            .b_cards
+            .lf_area
+        "#,
     )?;
     let query = get_text(content, ".qdef .hd_area #headword")
         .into_iter()
@@ -57,8 +65,8 @@ fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
                 prons.push(Pronunciation::pinyin(caps[1].to_owned()));
             }
         } else {
-            let re_us = Regex::new(r"美\s*\[(.*?)]").unwrap();
-            let re_uk = Regex::new(r"英\s*\[(.*?)]").unwrap();
+            let re_us = Regex::new(r"US\s*\[(.*?)]").unwrap();
+            let re_uk = Regex::new(r"UK\s*\[(.*?)]").unwrap();
             let re_audio = Regex::new("https?://.*?.mp3").unwrap();
             let selector = Selector::parse(".hd_p1_1 div").unwrap();
             let mut it = detail.select(&selector);

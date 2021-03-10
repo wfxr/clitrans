@@ -1,3 +1,5 @@
+use crate::util::audio::play_audio;
+
 use super::Layout;
 use colored::{Color, Colorize};
 use itertools::Itertools;
@@ -38,29 +40,29 @@ impl Translation {
 
 #[derive(Debug, Clone)]
 pub struct Pronunciation {
-    pub region: &'static str,
-    pub value:  String,
-    pub audio:  Option<String>,
+    pub tag:   &'static str,
+    pub value: String,
+    pub audio: Option<String>,
 }
 
 impl Pronunciation {
     pub fn pinyin(value: String) -> Self {
         Self {
-            region: "CN",
+            tag: "CN",
             value,
             audio: None,
         }
     }
     pub fn us(value: String) -> Self {
         Self {
-            region: "US",
+            tag: "US",
             value,
             audio: None,
         }
     }
     pub fn uk(value: String) -> Self {
         Self {
-            region: "UK",
+            tag: "UK",
             value,
             audio: None,
         }
@@ -86,6 +88,18 @@ pub enum ExpTag {
 }
 
 impl Translation {
+    pub async fn play_audio(&self, tag: &str) -> Result<(), Box<dyn std::error::Error>> {
+        match self
+            .prons
+            .iter()
+            .find(|p| p.tag.to_uppercase() == tag.to_uppercase())
+            .and_then(|p| p.audio.as_ref())
+        {
+            Some(url) => play_audio(url).await,
+            None => Err(format!("audio not found for {}", tag).into()),
+        }
+    }
+
     pub fn print(&self, layout: &Layout) {
         self.print_query();
         self.print_pronunciations();

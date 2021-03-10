@@ -18,6 +18,9 @@ pub struct Opts {
     /// How many web phrases to display
     #[clap(short, long, default_value = "3")]
     pub phrases: usize,
+    /// Play pronounce audio (if any)
+    #[clap(short, long)]
+    pub audio:   Option<String>,
 }
 
 #[derive(Clap, Debug, PartialEq)]
