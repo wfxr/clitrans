@@ -1,42 +1,59 @@
-use clap::AppSettings;
+use structopt::clap::{self, arg_enum, AppSettings};
+pub use structopt::StructOpt;
 
-pub use clap::Clap;
-
-#[derive(Clap, Debug)]
-#[clap( name = env!("CARGO_PKG_NAME"),
-       about = env!("CARGO_PKG_DESCRIPTION"),
-     version = env!("CARGO_PKG_VERSION"),
-     global_setting(AppSettings::ColoredHelp),
+#[derive(StructOpt)]
+#[structopt(name = env!("CARGO_PKG_NAME"),
+           about = env!("CARGO_PKG_DESCRIPTION"),
+         version = env!("CARGO_PKG_VERSION"),
+         global_setting(AppSettings::ColoredHelp),
 )]
 pub struct Opts {
     /// Text to translate
-    #[clap(name = "QUERY")]
-    pub query: String,
+    #[structopt(name = "QUERY")]
+    pub query: Option<String>,
 
     /// Translate engine
-    #[clap(short, long, arg_enum, default_value = "bing", case_insensitive = true)]
+    #[structopt(short, long, default_value = "bing", case_insensitive = true)]
     pub engine: Engine,
 
     /// How many explanations to display
-    #[clap(long, default_value = "20")]
+    #[structopt(long, default_value = "20")]
     pub explanations: usize,
 
     /// How many phonetics to display
-    #[clap(long, default_value = "2")]
+    #[structopt(long, default_value = "2")]
     pub phonetics: usize,
 
     /// How many web phrases to display
-    #[clap(short, long, default_value = "3")]
+    #[structopt(short, long, default_value = "3")]
     pub phrases: usize,
 
     /// Play pronounce audio (if any)
-    #[clap(short, long)]
+    #[structopt(short, long)]
     pub audio: Option<String>,
+
+    /// Subcommand
+    #[structopt(subcommand)]
+    pub subcommand: Option<Subcommand>,
 }
 
-#[derive(Clap, Debug, PartialEq)]
-#[allow(non_camel_case_types)]
-pub enum Engine {
-    youdao,
-    bing,
+#[derive(StructOpt)]
+pub enum Subcommand {
+    /// Generate shell completion file
+    Completion(CompletionOpt),
+}
+
+#[derive(StructOpt)]
+pub struct CompletionOpt {
+    /// Target shell name
+    #[structopt(possible_values = &clap::Shell::variants())]
+    pub shell: clap::Shell,
+}
+
+arg_enum! {
+    #[allow(non_camel_case_types)]
+    pub enum Engine {
+        youdao,
+        bing,
+    }
 }
