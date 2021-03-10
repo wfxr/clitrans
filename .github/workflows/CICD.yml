@@ -34,17 +34,17 @@ jobs:
       shell: bash
       run: |
         case ${{ matrix.job.target }} in
-          arm-unknown-linux-gnueabihf) sudo apt-get -y update; sudo apt-get -y install gcc-arm-linux-gnueabihf ;;
-          aarch64-unknown-linux-gnu)   sudo apt-get -y update; sudo apt-get -y install gcc-aarch64-linux-gnu   ;;
+          arm-unknown-linux-gnueabihf) sudo apt-get -y update; sudo apt-get -y install gcc-arm-linux-gnueabihf libasound2-dev ;;
+          aarch64-unknown-linux-gnu)   sudo apt-get -y update; sudo apt-get -y install gcc-aarch64-linux-gnu   libasound2-dev ;;
         esac
     - name: Initialize workflow variables
       id: vars
       shell: bash
       run: |
         # toolchain
-        TOOLCHAIN="stable" ## default to "stable" toolchain
+        TOOLCHAIN="nightly" ## default toolchain
         # * specify alternate TOOLCHAIN for *-pc-windows-gnu targets; gnu targets on Windows are broken for the standard *-pc-windows-msvc toolchain (refs: <https://github.com/rust-lang/rust/issues/47048>, <https://github.com/rust-lang/rust/issues/53454>, <https://github.com/rust-lang/cargo/issues/6754>)
-        case ${{ matrix.job.target }} in *-pc-windows-gnu) TOOLCHAIN="stable-${{ matrix.job.target }}" ;; esac;
+        case ${{ matrix.job.target }} in *-pc-windows-gnu) TOOLCHAIN="${TOOLCHAIN}-${{ matrix.job.target }}" ;; esac;
         # * use requested TOOLCHAIN if specified
         if [ -n "${{ matrix.job.toolchain }}" ]; then TOOLCHAIN="${{ matrix.job.toolchain }}" ; fi
         echo set-output name=TOOLCHAIN::${TOOLCHAIN}
