@@ -16,7 +16,11 @@ async fn main() {
             Engine::youdao => Box::new(youdao::Translator),
         };
 
-        let layout = Layout { phrases: opts.phrases };
+        let layout = Layout {
+            phrases:   opts.phrases,
+            phonetics: opts.phonetics,
+        };
+
         match engine.translate(&query).await? {
             Some(trans) => {
                 trans.print(&layout);

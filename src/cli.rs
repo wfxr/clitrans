@@ -11,16 +11,23 @@ pub use clap::Clap;
 pub struct Opts {
     /// Text to translate
     #[clap(name = "QUERY")]
-    pub query:   String,
+    pub query: String,
+
     /// Translate engine
     #[clap(short, long, arg_enum, default_value = "bing", case_insensitive = true)]
-    pub engine:  Engine,
+    pub engine: Engine,
+
+    /// How many phonetics to display
+    #[clap(long, default_value = "2")]
+    pub phonetics: usize,
+
     /// How many web phrases to display
     #[clap(short, long, default_value = "3")]
     pub phrases: usize,
+
     /// Play pronounce audio (if any)
     #[clap(short, long)]
-    pub audio:   Option<String>,
+    pub audio: Option<String>,
 }
 
 #[derive(Clap, Debug, PartialEq)]

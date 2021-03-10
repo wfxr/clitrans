@@ -114,7 +114,7 @@ impl Translation {
 
     pub fn print(&self, layout: &Layout) {
         self.print_query();
-        self.print_pronunciations();
+        self.print_pronunciations(&layout);
 
         let exps: Vec<_> = self
             .exps
@@ -142,11 +142,12 @@ impl Translation {
         println!("{}", self.query);
     }
 
-    fn print_pronunciations(&self) {
-        if !self.prons.is_empty() {
+    fn print_pronunciations(&self, layout: &Layout) {
+        if !self.prons.is_empty() && layout.phonetics > 0 {
             let buf = self
                 .prons
                 .iter()
+                .take(layout.phonetics)
                 .map(|pron| &pron.value)
                 .unique()
                 .map(|s| format!("/{}/", s.yellow()))
