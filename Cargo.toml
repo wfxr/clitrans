@@ -29,7 +29,7 @@ rodio = "0.13"
 scraper = "0.12"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-structopt = { version = "0.3", features = ["wrap_help"] }
+structopt = { version = "0.3", features = ["wrap_help", "color"], default-features = false }
 tokio = { version = "1.1", features = ["full"] }
 
 [profile.release]
@@ -37,4 +37,4 @@ lto = true
 codegen-units = 1
 
 [build-dependencies]
-structopt = { version = "0.3", features = ["wrap_help"] }
+structopt = { version = "0.3", features = ["wrap_help", "color"], default-features = false }
