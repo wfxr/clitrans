@@ -69,25 +69,24 @@ fn parse_phrases(content: ElementRef) -> Vec<(String, Vec<String>)> {
 
 fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
     let mut prons = vec![];
-    if let Some(s) = get_text(detail, "#phrsListTab > h2 > div.baav").get(0) {
-        let re = Regex::new(
-            r"(?x)
-                (\s*英\s*\[(?P<uk>.*?)]\s*)?
-                (\s*美\s*\[(?P<us>.*?)]\s*)?
-            ",
-        )
-        .unwrap();
-
-        if let Some(caps) = re.captures(&s) {
-            if let Some(py) = caps.name("py") {
-                prons.push(Pronunciation::pinyin(py.as_str().to_owned()));
-            }
-            if let Some(us) = caps.name("us") {
-                prons.push(Pronunciation::us(us.as_str().to_owned()));
-            }
-            if let Some(uk) = caps.name("uk") {
-                prons.push(Pronunciation::uk(uk.as_str().to_owned()));
-            }
+    let re_us = Regex::new(r"\s*美\s*\[(.*?)]").unwrap();
+    let re_uk = Regex::new(r"\s*英\s*\[(.*?)]").unwrap();
+    let pron_selector = Selector::parse("#phrsListTab > h2 > div.baav > .pronounce").unwrap();
+    let audio_selector = Selector::parse("a.dictvoice").unwrap();
+    for pron in detail.select(&pron_selector) {
+        let text: String = pron.text().collect();
+        let audio = pron
+            .select(&audio_selector)
+            .next()
+            .and_then(|a| a.value().attr("data-rel"))
+            .map(|data_rel| Url::parse(&format!("https://dict.youdao.com/dictvoice?audio={}", data_rel)))
+            .transpose()
+            .expect("failed to parse the audio url")
+            .map(|url| url.to_string());
+        if let Some(caps) = re_us.captures(&text) {
+            prons.push(Pronunciation::us(caps[1].to_owned()).audio(audio));
+        } else if let Some(caps) = re_uk.captures(&text) {
+            prons.push(Pronunciation::uk(caps[1].to_owned()).audio(audio));
         }
     }
     if let Some(s) = get_text(detail, "#phrsListTab > h2 > span.phonetic").get(0) {
