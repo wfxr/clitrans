@@ -40,17 +40,34 @@ impl Translation {
 pub struct Pronunciation {
     pub region: &'static str,
     pub value:  String,
+    pub audio:  Option<String>,
 }
 
 impl Pronunciation {
     pub fn pinyin(value: String) -> Self {
-        Self { region: "CN", value }
+        Self {
+            region: "CN",
+            value,
+            audio: None,
+        }
     }
     pub fn us(value: String) -> Self {
-        Self { region: "US", value }
+        Self {
+            region: "US",
+            value,
+            audio: None,
+        }
     }
     pub fn uk(value: String) -> Self {
-        Self { region: "UK", value }
+        Self {
+            region: "UK",
+            value,
+            audio: None,
+        }
+    }
+    pub fn audio(mut self, url: Option<String>) -> Self {
+        self.audio = url;
+        self
     }
 }
 

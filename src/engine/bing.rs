@@ -47,29 +47,38 @@ fn get_url(query: &str) -> Result<Url, Box<dyn std::error::Error>> {
 }
 
 fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
-    let s = get_text(detail, ".hd_p1_1")
-        .into_iter()
-        .next()
-        .expect("prons not found");
-    let re = Regex::new(
-        r"(?x)
-        (\s*\[(?P<py>.*?)]\s*)?
-        (美\s*\[(?P<us>.*?)]\s*)?
-        (英\s*\[(?P<uk>.*?)]\s*)?
-        ",
-    )
-    .unwrap();
-
     let mut prons = vec![];
-    if let Some(caps) = re.captures(&s) {
-        if let Some(py) = caps.name("py") {
-            prons.push(Pronunciation::pinyin(py.as_str().to_owned()));
-        }
-        if let Some(us) = caps.name("us") {
-            prons.push(Pronunciation::us(us.as_str().to_owned()));
-        }
-        if let Some(uk) = caps.name("uk") {
-            prons.push(Pronunciation::uk(uk.as_str().to_owned()));
+    let selector = Selector::parse(".hd_p1_1").unwrap();
+    if let Some(node) = detail.select(&selector).next() {
+        if node.children().count() == 1 {
+            let pron: String = node.text().collect();
+            let re_py = Regex::new(r"\[(.*?)]").unwrap();
+            if let Some(caps) = re_py.captures(&pron) {
+                prons.push(Pronunciation::pinyin(caps[1].to_owned()));
+            }
+        } else {
+            let re_us = Regex::new(r"美\s*\[(.*?)]").unwrap();
+            let re_uk = Regex::new(r"英\s*\[(.*?)]").unwrap();
+            let re_audio = Regex::new("https?://.*?.mp3").unwrap();
+            let selector = Selector::parse(".hd_p1_1 div").unwrap();
+            let mut it = detail.select(&selector);
+            while let Some(div) = it.next() {
+                let pron: String = div.text().collect();
+                let audio = it.next().and_then(|div| {
+                    div.children().next().and_then(|a| {
+                        a.value().as_element().unwrap().attr("onclick").and_then(|s| {
+                            re_audio
+                                .captures(s)
+                                .and_then(|caps| caps.get(0).map(|url| url.as_str().to_owned()))
+                        })
+                    })
+                });
+                if let Some(caps) = re_us.captures(&pron) {
+                    prons.push(Pronunciation::us(caps[1].to_owned()).audio(audio));
+                } else if let Some(caps) = re_uk.captures(&pron) {
+                    prons.push(Pronunciation::uk(caps[1].to_owned()).audio(audio));
+                }
+            }
         }
     }
     prons
