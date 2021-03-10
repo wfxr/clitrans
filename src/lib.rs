@@ -13,6 +13,7 @@ pub trait Translate {
 
 #[derive(Debug, Clone)]
 pub struct Layout {
-    pub phonetics: usize,
-    pub phrases:   usize,
+    pub explanations: usize,
+    pub phonetics:    usize,
+    pub phrases:      usize,
 }

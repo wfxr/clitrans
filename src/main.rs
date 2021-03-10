@@ -17,8 +17,9 @@ async fn main() {
         };
 
         let layout = Layout {
-            phrases:   opts.phrases,
-            phonetics: opts.phonetics,
+            explanations: opts.explanations,
+            phrases:      opts.phrases,
+            phonetics:    opts.phonetics,
         };
 
         match engine.translate(&query).await? {

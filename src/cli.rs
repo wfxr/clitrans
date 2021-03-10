@@ -17,6 +17,10 @@ pub struct Opts {
     #[clap(short, long, arg_enum, default_value = "bing", case_insensitive = true)]
     pub engine: Engine,
 
+    /// How many explanations to display
+    #[clap(long, default_value = "20")]
+    pub explanations: usize,
+
     /// How many phonetics to display
     #[clap(long, default_value = "2")]
     pub phonetics: usize,

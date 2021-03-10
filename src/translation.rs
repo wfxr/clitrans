@@ -133,7 +133,7 @@ impl Translation {
             .collect();
         let indent = exps.iter().map(|&(_, tag, _)| tag.len()).max().unwrap_or(0);
 
-        self.print_explanations(indent, &exps);
+        self.print_explanations(&layout, indent, &exps);
         self.print_phrases(&layout, indent);
         self.print_link(indent);
     }
@@ -156,10 +156,11 @@ impl Translation {
         }
     }
 
-    fn print_explanations(&self, indent: usize, exps: &[(Color, &str, &[String])]) {
-        if !exps.is_empty() {
+    fn print_explanations(&self, layout: &Layout, indent: usize, exps: &[(Color, &str, &[String])]) {
+        if !exps.is_empty() && layout.explanations > 0 {
             let buf = exps
                 .iter()
+                .take(layout.explanations)
                 .map(|(color, tag, itmes)| {
                     itmes
                         .iter()
