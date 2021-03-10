@@ -5,7 +5,6 @@ use std::process;
 
 use cli::*;
 use clitrans::{engine::*, Layout, Translate};
-use colored::Colorize;
 
 #[tokio::main]
 async fn main() {
@@ -31,7 +30,9 @@ async fn main() {
     }()
     .await
     {
-        eprintln!("\n[{}] {}", "Error".red().bold(), e);
+        eprintln!();
+        eprintln!("Messages:");
+        eprintln!("  * {}", e);
         process::exit(1);
     }
 }

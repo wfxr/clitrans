@@ -96,7 +96,19 @@ impl Translation {
             .and_then(|p| p.audio.as_ref())
         {
             Some(url) => play_audio(url).await,
-            None => Err(format!("audio not found for {}", tag).into()),
+            None => {
+                let possibles = self
+                    .prons
+                    .iter()
+                    .filter_map(|p| p.audio.as_ref().map(|_| p.tag))
+                    .join(", ");
+                let msg = if possibles.is_empty() {
+                    "audio not found".to_string()
+                } else {
+                    format!("audio not found for '{}'; possible values: [{}]", tag, possibles)
+                };
+                Err(msg.into())
+            }
         }
     }
 
