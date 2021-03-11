@@ -16,13 +16,14 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          - { os: ubuntu-18.04   , target: x86_64-unknown-linux-gnu  }
-          - { os: macos-latest   , target: x86_64-apple-darwin       }
-          - { os: windows-latest , target: x86_64-pc-windows-msvc    }
+          - { os: ubuntu-latest  , target: x86_64-unknown-linux-musl, features: ""  }
+          - { os: ubuntu-latest  , target: x86_64-unknown-linux-gnu , features: "audio" }
+          - { os: macos-latest   , target: x86_64-apple-darwin      , features: "audio" }
+          - { os: windows-latest , target: x86_64-pc-windows-msvc   , features: "audio" }
     steps:
     - name: Git checkout
       uses: actions/checkout@v1
-    - name: Install audio dependencies
+    - name: Install prerequisites
       shell: bash
       run: |
         case ${{ matrix.job.os }} in
@@ -30,6 +31,7 @@ jobs:
               sudo apt-get -y update
               sudo apt-get -y install pkg-config
               sudo apt-get -y install libasound2-dev
+              sudo apt-get -y install musl
               ;;
         esac
     - name: Initialize workflow variables
@@ -113,16 +115,6 @@ jobs:
         if [[ -n $DPKG_ARCH && -n $DPKG_VERSION ]]; then DPKG_NAME="${DPKG_BASENAME}_${DPKG_VERSION}_${DPKG_ARCH}.deb" ; fi
         echo set-output name=DPKG_NAME::${DPKG_NAME}
         echo ::set-output name=DPKG_NAME::${DPKG_NAME}
-        # target-specific options
-        # * CARGO_USE_CROSS (truthy)
-        CARGO_USE_CROSS='true' ; case '${{ matrix.job.use-cross }}' in ''|0|f|false|n|no) unset CARGO_USE_CROSS ;; esac;
-        echo set-output name=CARGO_USE_CROSS::${CARGO_USE_CROSS:-<empty>/false}
-        echo ::set-output name=CARGO_USE_CROSS::${CARGO_USE_CROSS}
-        # # * `arm` cannot be tested on ubuntu-* hosts (b/c testing is currently primarily done via comparison of target outputs with built-in outputs and the `arm` target is not executable on the host)
-        JOB_DO_TESTING="true"
-        case ${{ matrix.job.target }} in arm-*) unset JOB_DO_TESTING ;; esac;
-        echo set-output name=JOB_DO_TESTING::${JOB_DO_TESTING:-<empty>/false}
-        echo ::set-output name=JOB_DO_TESTING::${JOB_DO_TESTING}
         # * executable for `strip`?
         STRIP="strip" ; case ${{ matrix.job.target }} in arm-unknown-linux-gnueabihf) STRIP="arm-linux-gnueabihf-strip" ;; aarch64-unknown-linux-gnu) STRIP="aarch64-linux-gnu-strip" ;; *-pc-windows-msvc) STRIP="" ;; esac;
         echo set-output name=STRIP::${STRIP}
@@ -146,7 +138,8 @@ jobs:
       uses: actions-rs/toolchain@v1
       with:
         toolchain: ${{ steps.vars.outputs.TOOLCHAIN }}
-        override: true
+        target: ${{ matrix.job.target }}
+        default: true
     - name: Info
       shell: bash
       run: |
@@ -158,16 +151,16 @@ jobs:
     - name: Build
       shell: bash
       run: |
-        cargo build --locked --release
+        cargo build --locked --release --target=${{ matrix.job.target }} --features=${{ matrix.job.features }}
     - name: Test
       shell: bash
       run: |
-        cargo test --locked
+        cargo test --locked --target=${{ matrix.job.target }} --features=${{ matrix.job.features }}
     - name: Test run
       shell: bash
       run: |
-        cargo run -- --help
         cargo run -- hello
+        cargo run -- 你好
     - name: Strip binary
       shell: bash
       run: |
