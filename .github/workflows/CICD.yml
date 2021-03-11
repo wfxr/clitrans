@@ -31,7 +31,7 @@ jobs:
               sudo apt-get -y update
               sudo apt-get -y install pkg-config
               sudo apt-get -y install libasound2-dev
-              sudo apt-get -y install musl
+              sudo apt-get -y install musl-tools
               ;;
         esac
     - name: Initialize workflow variables
@@ -165,20 +165,20 @@ jobs:
       shell: bash
       run: |
         if [ -n "${{ steps.vars.outputs.STRIP }}" ]; then
-          ${{ steps.vars.outputs.STRIP }} 'target/release/${{ env.PROJECT_NAME }}${{ steps.vars.outputs.EXE_suffix }}'
+          ${{ steps.vars.outputs.STRIP }} 'target/${{ matrix.job.target }}/release/${{ env.PROJECT_NAME }}${{ steps.vars.outputs.EXE_suffix }}'
         fi
     - name: Upload build artifacts
       uses: actions/upload-artifact@master
       with:
         name: ${{ env.PROJECT_NAME }}-${{ matrix.job.target }}
-        path: target/release/${{ env.PROJECT_NAME }}${{ steps.vars.outputs.EXE_suffix }}
+        path: target/${{ matrix.job.target }}/release/${{ env.PROJECT_NAME }}${{ steps.vars.outputs.EXE_suffix }}
     - name: Package
       shell: bash
       run: |
         ARCHIVE_DIR='${{ steps.vars.outputs.STAGING }}/${{ steps.vars.outputs.PKG_BASENAME }}/'
         COPYRIGHT_YEARS="2020 - "$(date "+%Y")
         BINARY_NAME='${{ env.PROJECT_NAME }}${{ steps.vars.outputs.EXE_suffix }}'
-        BINARY_PATH='target/release/'"$BINARY_NAME"
+        BINARY_PATH='target/${{ matrix.job.target }}/release/'"$BINARY_NAME"
         # Copy binary
         cp "$BINARY_PATH" "$ARCHIVE_DIR"
 
