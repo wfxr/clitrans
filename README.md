@@ -16,7 +16,7 @@
 
 ### Features
 
-* No api token required.
+* No API token required.
 * Integrated pronunciation function (with `audio` feature enabled).
 * Multiple translate engine support.
 * [Multi platforms](https://github.com/wfxr/clitrans/releases) support.
@@ -45,7 +45,7 @@ Run `clitrans --help` to view detailed usage.
 
 ### Installation
 
-#### On Arch Linux [WIP]
+#### On Arch Linux
 
 `clitrans` is available in the Arch User Repository. To install it from [AUR](https://aur.archlinux.org/packages/clitrans):
 
@@ -53,7 +53,7 @@ Run `clitrans --help` to view detailed usage.
 yay -S clitrans
 ```
 
-#### On macOS [WIP]
+#### On macOS
 
 You can install `clitrans` with Homebrew:
 
