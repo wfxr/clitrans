@@ -21,6 +21,8 @@ _clitrans() {
 '--phonetics=[How many phonetics to display]' \
 '-p+[How many web phrases to display]' \
 '--phrases=[How many web phrases to display]' \
+'-a+[Play pronounce audio (if any)]' \
+'--audio=[Play pronounce audio (if any)]' \
 '-h[Prints help information]' \
 '--help[Prints help information]' \
 '-V[Prints version information]' \

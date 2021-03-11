@@ -28,7 +28,6 @@ pub struct Opts {
     #[structopt(short, long, default_value = "3")]
     pub phrases: usize,
 
-    #[cfg(feature = "audio")]
     /// Play pronounce audio (if any)
     #[structopt(short, long)]
     pub audio: Option<String>,

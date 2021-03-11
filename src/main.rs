@@ -31,9 +31,12 @@ fn main() {
                         match engine.translate(&$query)? {
                             Some(trans) => {
                                 trans.print(&layout);
-                                #[cfg(feature = "audio")]
+                                #[allow(unused_variables)]
                                 if let Some(tag) = &opts.audio {
+                                    #[cfg(feature = "audio")]
                                     trans.play_audio(tag)?;
+                                    #[cfg(not(feature = "audio"))]
+                                    return Err("audio is not enabled".into());
                                 }
                             }
                             None => return Err("translation not found".into()),
@@ -42,15 +45,13 @@ fn main() {
                 }
 
                 match opts.query {
-                    Some(query) => {
-                        translate!(query);
-                    }
+                    Some(query) => translate!(query),
                     None => loop {
                         print!("> ");
                         std::io::stdout().flush()?;
                         let mut query = String::new();
                         std::io::stdin().read_line(&mut query)?;
-                        translate!(query);
+                        translate!(query)
                     },
                 }
             }

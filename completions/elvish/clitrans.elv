@@ -21,6 +21,8 @@ edit:completion:arg-completer[clitrans] = [@words]{
             cand --phonetics 'How many phonetics to display'
             cand -p 'How many web phrases to display'
             cand --phrases 'How many web phrases to display'
+            cand -a 'Play pronounce audio (if any)'
+            cand --audio 'Play pronounce audio (if any)'
             cand -h 'Prints help information'
             cand --help 'Prints help information'
             cand -V 'Prints version information'
