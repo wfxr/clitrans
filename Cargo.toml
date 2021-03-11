@@ -10,14 +10,16 @@ keywords = [
     "tool",
 ]
 license = "MIT/Apache-2.0"
-exclude = [
-    "/completions"
-]
+exclude = ["/completions"]
 repository = "https://github.com/wfxr/clitrans"
 edition = "2018"
+
 build = "build.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+audio = ["rodio"]
 
 [dependencies]
 async-trait = "0.1"
@@ -25,12 +27,16 @@ colored = "2.0"
 itertools = "0.10"
 regex = "1.4"
 reqwest = { version = "0.11", features = ["json", "gzip"] }
-rodio = "0.13"
+rodio = { version = "0.13", optional = true }
 scraper = "0.12"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 structopt = { version = "0.3", features = ["wrap_help", "color"], default-features = false }
 tokio = { version = "1.1", features = ["full"] }
+
+# for reqwest on musl
+[target.'cfg(target_env = "musl")'.dependencies]
+openssl = { version = "0.10", features = ["vendored"] }
 
 [profile.release]
 lto = true

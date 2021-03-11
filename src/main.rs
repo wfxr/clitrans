@@ -31,6 +31,7 @@ async fn main() {
                         match engine.translate(&$query).await? {
                             Some(trans) => {
                                 trans.print(&layout);
+                                #[cfg(feature = "audio")]
                                 if let Some(tag) = &opts.audio {
                                     trans.play_audio(tag).await?;
                                 }

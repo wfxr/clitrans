@@ -1,3 +1,4 @@
+#[cfg(feature = "audio")]
 use crate::util::audio::play_audio;
 
 use super::Layout;
@@ -88,6 +89,7 @@ pub enum ExpTag {
 }
 
 impl Translation {
+    #[cfg(feature = "audio")]
     pub async fn play_audio(&self, tag: &str) -> Result<(), Box<dyn std::error::Error>> {
         match self
             .prons

@@ -26,8 +26,6 @@ Register-ArgumentCompleter -Native -CommandName 'clitrans' -ScriptBlock {
             [CompletionResult]::new('--phonetics', 'phonetics', [CompletionResultType]::ParameterName, 'How many phonetics to display')
             [CompletionResult]::new('-p', 'p', [CompletionResultType]::ParameterName, 'How many web phrases to display')
             [CompletionResult]::new('--phrases', 'phrases', [CompletionResultType]::ParameterName, 'How many web phrases to display')
-            [CompletionResult]::new('-a', 'a', [CompletionResultType]::ParameterName, 'Play pronounce audio (if any)')
-            [CompletionResult]::new('--audio', 'audio', [CompletionResultType]::ParameterName, 'Play pronounce audio (if any)')
             [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Prints help information')
             [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Prints help information')
             [CompletionResult]::new('-V', 'V', [CompletionResultType]::ParameterName, 'Prints version information')

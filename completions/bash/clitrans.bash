@@ -26,7 +26,7 @@ _clitrans() {
 
     case "${cmd}" in
         clitrans)
-            opts=" -h -V -e -p -a  --help --version --engine --explanations --phonetics --phrases --audio  <QUERY>  completion help"
+            opts=" -h -V -e -p  --help --version --engine --explanations --phonetics --phrases  <QUERY>  completion help"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 1 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
@@ -54,14 +54,6 @@ _clitrans() {
                     return 0
                     ;;
                     -p)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                --audio)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                    -a)
                     COMPREPLY=($(compgen -f "${cur}"))
                     return 0
                     ;;
