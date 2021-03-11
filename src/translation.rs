@@ -170,10 +170,11 @@ impl Translation {
                         .map(|(i, item)| {
                             let title = if i == 0 { tag } else { "" };
                             format!(
-                                "{:>indent$}  {} {}",
+                                "{:>w$}  {} {}",
                                 title.color(*color).italic(),
                                 "*".color(*color),
-                                item.color(*color)
+                                item.color(*color),
+                                w = indent,
                             )
                         })
                         .join("\n")
@@ -191,10 +192,10 @@ impl Translation {
                 .filter(|(_, exps)| !exps.is_empty())
                 .take(layout.phrases)
                 .map(|(phrase, exps)| {
-                    format!("{:>indent$}  {} {}\n", "", "*".cyan(), phrase.cyan())
+                    format!("{:>w$}  {} {}\n", "", "*".cyan(), phrase.cyan(), w = indent)
                         + &exps
                             .iter()
-                            .map(|exp| format!("{:>indent$}    {} {}", "", "-".cyan(), exp.cyan()))
+                            .map(|exp| format!("{:>w$}    {} {}", "", "-".cyan(), exp.cyan(), w = indent))
                             .join("\n")
                 })
                 .join("\n\n");
@@ -204,11 +205,12 @@ impl Translation {
 
     fn print_link(&self, indent: usize) {
         println!(
-            "\n{}\n{:>indent$}  {} {}",
+            "\n{}\n{:>w$}  {} {}",
             "Source URL:".blue(),
             "",
             "*".blue(),
-            self.url.blue()
+            self.url.blue(),
+            w = indent,
         );
     }
 }
