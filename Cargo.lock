@@ -227,7 +227,7 @@ checksum = "4bfbf56724aa9eca8afa4fcfadeb479e722935bb2a0900c2d37e0cc477af0688"
 
 [[package]]
 name = "clitrans"
-version = "0.2.1-rc.0"
+version = "0.3.0"
 dependencies = [
  "colored",
  "isahc",
