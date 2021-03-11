@@ -7,7 +7,7 @@ pub struct Translator;
 
 impl Translate for Translator {
     fn translate(&self, query: &str) -> Result<Option<Translation>, Box<dyn std::error::Error>> {
-        let uri: Uri = format!("http://dict.youdao.com/w/{}", query).parse()?;
+        let uri = format_url!("http://dict.youdao.com/w/{}", query)?.to_uri()?;
         let req = Request::get(&uri)
             .header("Accept-Encoding", "gzip")
             .header("Accept-Language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7")
@@ -70,10 +70,10 @@ fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
             .select(&audio_selector)
             .next()
             .and_then(|a| a.value().attr("data-rel"))
-            .map(|data_rel| format!("https://dict.youdao.com/dictvoice?audio={}", data_rel).parse())
+            .map(|data_rel| format_url!("https://dict.youdao.com/dictvoice?audio={}", data_rel))
             .transpose()
             .expect("failed to parse the audio url")
-            .map(|uri: Uri| uri.to_string());
+            .map(|url| url.to_string());
         if let Some(caps) = re_us.captures(&text) {
             prons.push(Pronunciation::us(caps[1].to_owned()).audio(audio));
         } else if let Some(caps) = re_uk.captures(&text) {

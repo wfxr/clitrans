@@ -6,7 +6,7 @@ pub struct Translator;
 
 impl Translate for Translator {
     fn translate(&self, input: &str) -> Result<Option<Translation>, Box<dyn std::error::Error>> {
-        let uri: Uri = format!("https://cn.bing.com/dict/search?q={}&mkt={}", input, "zh-cn").parse()?;
+        let uri = format_url!("https://cn.bing.com/dict/search?q={}&mkt={}", input, "zh-cn")?.to_uri()?;
         let req = Request::get(&uri)
             .header("Accept-Encoding", "gzip")
             .header("Accept-Language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7")
