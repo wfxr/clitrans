@@ -1,29 +1,24 @@
 use super::*;
 use itertools::Itertools;
 use regex::Regex;
-use reqwest::Url;
 use scraper::{ElementRef, Html, Selector};
 
 pub struct Translator;
 
-#[async_trait]
 impl Translate for Translator {
-    async fn translate(&self, query: &str) -> Result<Option<Translation>, Box<dyn std::error::Error>> {
-        let url = get_url(query)?;
-        let client = reqwest::Client::builder().build().unwrap();
-        let resp = client
-            .get(url.clone())
+    fn translate(&self, query: &str) -> Result<Option<Translation>, Box<dyn std::error::Error>> {
+        let uri: Uri = format!("http://dict.youdao.com/w/{}", query).parse()?;
+        let req = Request::get(&uri)
             .header("Accept-Encoding", "gzip")
             .header("Accept-Language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7")
-            .send()
-            .await?
-            .text()
-            .await?;
-        Ok(parse(&url, &resp))
+            .body(())?;
+        let client = HttpClientBuilder::new().build()?;
+        let resp = client.send(req)?.text()?;
+        Ok(parse(&uri, &resp))
     }
 }
 
-fn parse(url: &Url, body: &str) -> Option<Translation> {
+fn parse(url: &Uri, body: &str) -> Option<Translation> {
     let root = Html::parse_document(&body);
     let content = get_element(&root, "#results-contents")?;
     let query = get_text(content, "#phrsListTab > h2 > .keyword")
@@ -44,10 +39,6 @@ fn parse(url: &Url, body: &str) -> Option<Translation> {
             .explanations(exps)
             .phrases(phrases),
     )
-}
-
-fn get_url(query: &str) -> Result<Url, Box<dyn std::error::Error>> {
-    Ok(Url::parse(&format!("http://dict.youdao.com/w/{}", query))?)
 }
 
 fn parse_phrases(content: ElementRef) -> Vec<(String, Vec<String>)> {
@@ -79,10 +70,10 @@ fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
             .select(&audio_selector)
             .next()
             .and_then(|a| a.value().attr("data-rel"))
-            .map(|data_rel| Url::parse(&format!("https://dict.youdao.com/dictvoice?audio={}", data_rel)))
+            .map(|data_rel| format!("https://dict.youdao.com/dictvoice?audio={}", data_rel).parse())
             .transpose()
             .expect("failed to parse the audio url")
-            .map(|url| url.to_string());
+            .map(|uri: Uri| uri.to_string());
         if let Some(caps) = re_us.captures(&text) {
             prons.push(Pronunciation::us(caps[1].to_owned()).audio(audio));
         } else if let Some(caps) = re_uk.captures(&text) {

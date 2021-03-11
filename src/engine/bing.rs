@@ -1,28 +1,23 @@
 use super::*;
 use regex::Regex;
-use reqwest::Url;
 use scraper::{ElementRef, Html, Selector};
 
 pub struct Translator;
 
-#[async_trait]
 impl Translate for Translator {
-    async fn translate(&self, input: &str) -> Result<Option<Translation>, Box<dyn std::error::Error>> {
-        let url = get_url(input)?;
-        let client = reqwest::Client::builder().build().unwrap();
-        let resp = client
-            .get(url.clone())
+    fn translate(&self, input: &str) -> Result<Option<Translation>, Box<dyn std::error::Error>> {
+        let uri: Uri = format!("https://cn.bing.com/dict/search?q={}&mkt={}", input, "zh-cn").parse()?;
+        let req = Request::get(&uri)
             .header("Accept-Encoding", "gzip")
             .header("Accept-Language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7")
-            .send()
-            .await?
-            .text()
-            .await?;
-        Ok(parse(url, &resp))
+            .body(())?;
+        let client = HttpClientBuilder::new().build()?;
+        let resp = client.send(req)?.text()?;
+        Ok(parse(&uri, &resp))
     }
 }
 
-fn parse(url: Url, body: &str) -> Option<Translation> {
+fn parse(url: &Uri, body: &str) -> Option<Translation> {
     let root = Html::parse_document(&body);
     let content = get_element(
         &root,
@@ -45,13 +40,6 @@ fn parse(url: Url, body: &str) -> Option<Translation> {
             .pronunciations(prons)
             .explanations(exps),
     )
-}
-
-fn get_url(query: &str) -> Result<Url, Box<dyn std::error::Error>> {
-    Ok(Url::parse(&format!(
-        "https://cn.bing.com/dict/search?q={}&mkt={}",
-        query, "zh-cn"
-    ))?)
 }
 
 fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {

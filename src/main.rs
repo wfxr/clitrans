@@ -1,18 +1,18 @@
-#![feature(async_closure)]
 mod cli;
-
-use std::{io::Write, process};
 
 use cli::*;
 use clitrans::{engine::*, Layout, Translate};
+use std::{
+    io::{stdout, Write},
+    process,
+};
 
-#[tokio::main]
-async fn main() {
-    if let Err(e) = async || -> Result<(), Box<dyn std::error::Error>> {
+fn main() {
+    if let Err(e) = || -> Result<(), Box<dyn std::error::Error>> {
         let opts: Opts = Opts::from_args();
         match opts.subcommand {
             Some(Subcommand::Completion(CompletionOpt { shell })) => {
-                Opts::clap().gen_completions_to(env!("CARGO_PKG_NAME"), shell, &mut std::io::stdout());
+                Opts::clap().gen_completions_to(env!("CARGO_PKG_NAME"), shell, &mut stdout());
             }
             None => {
                 let engine: Box<dyn Translate> = match opts.engine {
@@ -28,12 +28,12 @@ async fn main() {
 
                 macro_rules! translate {
                     ($query:expr) => {
-                        match engine.translate(&$query).await? {
+                        match engine.translate(&$query)? {
                             Some(trans) => {
                                 trans.print(&layout);
                                 #[cfg(feature = "audio")]
                                 if let Some(tag) = &opts.audio {
-                                    trans.play_audio(tag).await?;
+                                    trans.play_audio(tag)?;
                                 }
                             }
                             None => return Err("translation not found".into()),
@@ -56,9 +56,7 @@ async fn main() {
             }
         }
         Ok(())
-    }()
-    .await
-    {
+    }() {
         eprintln!();
         eprintln!("Messages:");
         eprintln!("  * {}", e);

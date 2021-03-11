@@ -90,14 +90,14 @@ pub enum ExpTag {
 
 impl Translation {
     #[cfg(feature = "audio")]
-    pub async fn play_audio(&self, tag: &str) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn play_audio(&self, tag: &str) -> Result<(), Box<dyn std::error::Error>> {
         match self
             .prons
             .iter()
             .find(|p| p.tag.to_uppercase() == tag.to_uppercase())
             .and_then(|p| p.audio.as_ref())
         {
-            Some(url) => play_audio(url).await,
+            Some(url) => play_audio(url),
             None => {
                 let possibles = self
                     .prons
