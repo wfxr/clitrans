@@ -1,4 +1,4 @@
-<h1 align="center">🐙 Clitrans </klɪ'træns/></h1>
+<h1 align="center">🍒 Clitrans </klɪ'træns/></h1>
 <p align="center">
     <em>Yet another command-line translator.</em>
 <p align="center">
