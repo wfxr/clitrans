@@ -235,8 +235,6 @@ dependencies = [
  "regex",
  "rodio",
  "scraper",
- "serde",
- "serde_json",
  "structopt",
  "url",
 ]
