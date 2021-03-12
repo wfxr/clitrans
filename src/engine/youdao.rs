@@ -8,12 +8,12 @@ pub struct Translator;
 impl Translate for Translator {
     fn translate(&self, query: &str) -> Result<Option<Translation>, Box<dyn std::error::Error>> {
         let uri = format_url!("http://dict.youdao.com/w/{}", query)?.to_uri()?;
-        let req = Request::get(&uri)
+        let resp = Request::get(&uri)
             .header("Accept-Encoding", "gzip")
             .header("Accept-Language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7")
-            .body(())?;
-        let client = HttpClientBuilder::new().build()?;
-        let resp = client.send(req)?.text()?;
+            .body(())?
+            .send()?
+            .text()?;
         Ok(parse(&uri, &resp))
     }
 }

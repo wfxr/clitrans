@@ -7,7 +7,7 @@ use super::Translate;
 
 use isahc::{
     http::{self, Request, Uri},
-    HttpClientBuilder, ReadResponseExt,
+    ReadResponseExt, RequestExt,
 };
 use url::Url;
 
