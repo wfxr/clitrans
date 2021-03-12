@@ -4,8 +4,9 @@ use crate::util::audio::play_audio;
 use super::Layout;
 use colored::{Color, Colorize};
 use itertools::Itertools;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Translation {
     pub query:   String,
     pub url:     String,
@@ -39,9 +40,9 @@ impl Translation {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Pronunciation {
-    pub tag:   &'static str,
+    pub tag:   String,
     pub value: String,
     pub audio: Option<String>,
 }
@@ -49,21 +50,21 @@ pub struct Pronunciation {
 impl Pronunciation {
     pub fn pinyin(value: String) -> Self {
         Self {
-            tag: "CN",
+            tag: "CN".to_owned(),
             value,
             audio: None,
         }
     }
     pub fn us(value: String) -> Self {
         Self {
-            tag: "US",
+            tag: "US".to_owned(),
             value,
             audio: None,
         }
     }
     pub fn uk(value: String) -> Self {
         Self {
-            tag: "UK",
+            tag: "UK".to_owned(),
             value,
             audio: None,
         }
@@ -74,13 +75,13 @@ impl Pronunciation {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Explanation {
     pub tag:   ExpTag,
     pub items: Vec<String>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum ExpTag {
     Web,
     Machine,
@@ -102,7 +103,7 @@ impl Translation {
                 let possibles = self
                     .prons
                     .iter()
-                    .filter_map(|p| p.audio.as_ref().map(|_| p.tag))
+                    .filter_map(|p| p.audio.as_ref().map(|_| &p.tag))
                     .join(", ");
                 let msg = if possibles.is_empty() {
                     "audio not found".to_string()

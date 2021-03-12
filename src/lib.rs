@@ -2,7 +2,7 @@ pub mod engine;
 pub mod translation;
 mod util;
 
-use translation::Translation;
+pub use translation::Translation;
 
 pub trait Translate {
     fn translate(&self, text: &str) -> Result<Option<Translation>, Box<dyn std::error::Error>>;
