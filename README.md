@@ -80,7 +80,9 @@ If you want the latest version, clone this repository and run `cargo build --rel
 
 ### Related Project
 
-[ydcv](https://github.com/felixonmars/ydcv): A cli wrapper for Youdao online translate (Chinese <-> English) service api.
+[ydcv](https://github.com/felixonmars/ydcv): A cli wrapper for Youdao online translate service api.
+
+[bing-dict](https://github.com/Shawyeok/bing-dict): A cli wrapper for Bing online dictionary.
 
 ### License
 
