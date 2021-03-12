@@ -147,11 +147,11 @@ jobs:
         rustup toolchain list
         rustup default
         cargo -V
-        rustc -V
+        rustc -V --verbose
     - name: Build
       shell: bash
       run: |
-        cargo build --locked --release --target=${{ matrix.job.target }} --features=${{ matrix.job.features }}
+        RUST_BACKTRACE=1 cargo build --locked --release --target=${{ matrix.job.target }} --features=${{ matrix.job.features }}
     - name: Test
       shell: bash
       run: |
