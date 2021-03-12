@@ -73,6 +73,7 @@ fn gen_tests() -> Result<()> {
 
             writeln!(file, "{}", test_fn)?;
         }
+        writeln!(file, "// vim: ro")?;
     }
     Ok(())
 }

@@ -174,3 +174,4 @@ fn en_phrase() {
     assert_eq!(r.phrases, expected.phrases);
 }
 
+// vim: ro
