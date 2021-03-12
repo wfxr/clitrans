@@ -30,6 +30,7 @@ regex = "1.4"
 scraper = "0.12"
 url = "2.2"
 rodio = { version = "0.13", optional = true }
+lazy_static = "1"
 
 [dependencies.structopt]
 version = "0.3"

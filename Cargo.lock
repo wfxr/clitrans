@@ -232,6 +232,7 @@ dependencies = [
  "colored",
  "isahc",
  "itertools",
+ "lazy_static",
  "regex",
  "rodio",
  "scraper",

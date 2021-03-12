@@ -2,8 +2,8 @@ use super::*;
 use itertools::Itertools;
 use regex::Regex;
 use scraper::{ElementRef, Html, Selector};
-
 pub struct Translator;
+use structopt::lazy_static::lazy_static;
 
 impl Translate for Translator {
     fn translate(&self, query: &str) -> Result<Option<Translation>, Box<dyn std::error::Error>> {
@@ -58,9 +58,11 @@ fn parse_phrases(content: ElementRef) -> Vec<(String, Vec<String>)> {
 }
 
 fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
+    lazy_static! {
+        static ref RE_US: Regex = Regex::new(r"\s*美\s*\[(.*?)]").unwrap();
+        static ref RE_UK: Regex = Regex::new(r"\s*英\s*\[(.*?)]").unwrap();
+    }
     let mut prons = vec![];
-    let re_us = Regex::new(r"\s*美\s*\[(.*?)]").unwrap();
-    let re_uk = Regex::new(r"\s*英\s*\[(.*?)]").unwrap();
     let pron_selector = Selector::parse("#phrsListTab > h2 > div.baav > .pronounce").unwrap();
     let audio_selector = Selector::parse("a.dictvoice").unwrap();
     for pron in detail.select(&pron_selector) {
@@ -73,9 +75,9 @@ fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
             .transpose()
             .expect("failed to parse the audio url")
             .map(|url| url.to_string());
-        if let Some(caps) = re_us.captures(&text) {
+        if let Some(caps) = RE_US.captures(&text) {
             prons.push(Pronunciation::us(caps[1].to_owned()).audio(audio));
-        } else if let Some(caps) = re_uk.captures(&text) {
+        } else if let Some(caps) = RE_UK.captures(&text) {
             prons.push(Pronunciation::uk(caps[1].to_owned()).audio(audio));
         }
     }
@@ -96,12 +98,14 @@ fn parse_explanation(detail: ElementRef) -> Vec<Explanation> {
 }
 
 fn parse_explanation_en(detail: ElementRef) -> Vec<Explanation> {
+    lazy_static! {
+        static ref RE_EXP: Regex = Regex::new(r#"(?P<pos>\w+\.)?(?P<exp>.*)"#).unwrap();
+    }
     let selector = Selector::parse("#phrsListTab > div.trans-container > ul > li").unwrap();
-    let re = Regex::new(r#"(?P<pos>\w+\.)?(?P<exp>.*)"#).unwrap();
     let mut exps = vec![];
     for li in detail.select(&selector) {
         let text: String = li.text().collect();
-        if let Some(caps) = re.captures(&text) {
+        if let Some(caps) = RE_EXP.captures(&text) {
             if let Some(exp) = caps.name("exp") {
                 let tag = caps
                     .name("pos")
@@ -149,7 +153,7 @@ fn parse_explanation_machine(detail: ElementRef) -> Option<Explanation> {
 }
 
 fn parse_explanation_web(detail: ElementRef) -> Vec<Explanation> {
-    let texts = get_text(detail, "#tWebTrans div.wt-container .title");
+    let texts = get_text(detail, "#tWebTrans > div.wt-container > .title");
     let items = texts.iter().map(|s| s.split_whitespace().join(" ")).collect();
     vec![Explanation {
         tag: ExpTag::Web,
