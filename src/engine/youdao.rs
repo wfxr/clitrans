@@ -24,12 +24,11 @@ fn parse(url: &Uri, body: &str) -> Option<Translation> {
     let query = get_text(content, "#phrsListTab > h2 > .keyword")
         .into_iter()
         .next()
-        .unwrap_or_else(|| {
+        .or_else(|| {
             get_text(content, "#fanyiToggle > div > p:nth-child(1)")
                 .into_iter()
                 .next()
-                .expect("query not found")
-        });
+        })?;
     let prons = parse_pronounciations(content);
     let exps = parse_explanation(content);
     let phrases = parse_phrases(content);
