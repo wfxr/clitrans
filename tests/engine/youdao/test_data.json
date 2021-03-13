@@ -1,0 +1,107 @@
+[{
+  "name": "cn_word",
+  "input": "你好",
+  "expect": {
+    "query": "你好",
+    "url": "http://dict.youdao.com/w/%E4%BD%A0%E5%A5%BD",
+    "prons": [{
+      "tag": "CN",
+      "value": "nǐ hǎo",
+      "audio": null
+    }],
+    "exps": [{
+      "tag": "Phrase",
+      "items": ["hello", "hi", "how do you do"]
+    }, {
+      "tag": "Web",
+      "items": ["Hello", "How do you do", "hi"]
+    }],
+    "phrases": [
+      ["你好吗", ["How are you", "How Do You Do", "Are You OK"]],
+      ["你好小娜", ["Hey Cortana"]],
+      ["你好啊", ["Hello", "Hey"]],
+      ["先生你好", ["Hello Sir"]]
+    ]
+  }
+}, {
+  "name": "cn_phrase",
+  "input": "你好，世界",
+  "expect": {
+    "query": "你好,世界",
+    "url": "http://dict.youdao.com/w/%E4%BD%A0%E5%A5%BD%EF%BC%8C%E4%B8%96%E7%95%8C",
+    "prons": [],
+    "exps": [{
+      "tag": "Machine",
+      "items": ["Hello, World"]
+    }, {
+      "tag": "Web",
+      "items": []
+    }],
+    "phrases": [
+      ["你好世界", ["hello world"]],
+      ["你好世界新闻和密钥", ["hello world press and key"]],
+      ["你好世界新闻和关键", ["hello world press and key"]],
+      ["你好世界命令行参数", ["hello world command line args"]],
+      ["世界你好", ["Hello World", "World how are"]]
+    ]
+  }
+}, {
+  "name": "en_word",
+  "input": "hello",
+  "expect": {
+    "query": "hello",
+    "url": "http://dict.youdao.com/w/hello",
+    "prons": [{
+      "tag": "UK",
+      "value": "həˈləʊ",
+      "audio": "https://dict.youdao.com/dictvoice?audio=hello&type=1"
+    }, {
+      "tag": "US",
+      "value": "həˈləʊ",
+      "audio": "https://dict.youdao.com/dictvoice?audio=hello&type=2"
+    }],
+    "exps": [{
+      "tag": {
+        "Pos": "int."
+      },
+      "items": ["喂", "哈罗，你好，您好（表示问候， 惊奇或唤起注意时的用语）"]
+    }, {
+      "tag": {
+        "Pos": "n."
+      },
+      "items": ["（Hello）（法）埃洛（人名）"]
+    }, {
+      "tag": "Web",
+      "items": ["你好", "您好", "哈啰", "喂"]
+    }],
+    "phrases": [
+      ["Hello Kitty", ["凯蒂猫", "吉蒂猫"]],
+      ["Hello Neighbor", ["你好邻居"]]
+    ]
+  }
+}, {
+  "name": "en_phrase",
+  "input": "Hello, world",
+  "expect": {
+    "query": "Hello, world",
+    "url": "http://dict.youdao.com/w/Hello,%20world",
+    "prons": [],
+    "exps": [{
+      "tag": "Machine",
+      "items": ["你好，世界"]
+    }, {
+      "tag": "Web",
+      "items": []
+    }],
+    "phrases": [
+      ["hello world", ["你好世界", "开始", "别来无恙", "举个例子"]],
+      ["Hello world UI", ["实现方法"]],
+      ["hello world press and key", ["您好世界新闻和关键", "你好世界新闻和密钥"]],
+      ["Hello world only", ["世间只有你好"]],
+      ["Hello world always", ["世间始终你好"]],
+      ["air hello world", ["调税计算器"]],
+      ["Hello Kitty Cutie World", ["凯蒂猫顽皮世界"]],
+      ["Hello world DIY", ["西雅图"]]
+    ]
+  }
+}]
