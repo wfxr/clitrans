@@ -1,7 +1,7 @@
 use isahc::ReadResponseExt;
 use std::io::Cursor;
 
-pub fn play_audio(url: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub fn play_audio(url: &str) -> anyhow::Result<()> {
     let mut resp = isahc::get(url)?;
     let mut buf = vec![];
     resp.copy_to(&mut buf)?;

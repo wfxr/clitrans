@@ -6,7 +6,7 @@ pub struct Translator;
 use structopt::lazy_static::lazy_static;
 
 impl Translate for Translator {
-    fn translate(&self, query: &str) -> Result<Option<Translation>, Box<dyn std::error::Error>> {
+    fn translate(&self, query: &str) -> Result<Option<Translation>> {
         let uri = format_url!("http://dict.youdao.com/w/{}", query)?.to_uri()?;
         let resp = Request::get(&uri)
             .header("Accept-Encoding", "gzip")

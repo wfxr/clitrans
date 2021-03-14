@@ -3,7 +3,7 @@ pub mod youdao;
 
 use super::translation::{ExpTag, Explanation, Pronunciation, Translation};
 use super::util::html::*;
-use super::Translate;
+use super::{Result, Translate};
 
 use isahc::{
     http::{self, Request, Uri},

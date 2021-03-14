@@ -91,7 +91,7 @@ pub enum ExpTag {
 
 impl Translation {
     #[cfg(feature = "audio")]
-    pub fn play_audio(&self, tag: &str) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn play_audio(&self, tag: &str) -> super::Result<()> {
         match self
             .prons
             .iter()
@@ -110,7 +110,7 @@ impl Translation {
                 } else {
                     format!("audio not found for '{}'; possible values: [{}]", tag, possibles)
                 };
-                Err(msg.into())
+                Err(anyhow!(msg))
             }
         }
     }

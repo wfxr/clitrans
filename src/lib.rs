@@ -2,10 +2,15 @@ pub mod engine;
 pub mod translation;
 mod util;
 
+#[allow(unused_imports)]
+#[macro_use]
+extern crate anyhow;
+use anyhow::Result;
+
 pub use translation::Translation;
 
 pub trait Translate {
-    fn translate(&self, text: &str) -> Result<Option<Translation>, Box<dyn std::error::Error>>;
+    fn translate(&self, text: &str) -> Result<Option<Translation>>;
 }
 
 #[derive(Debug, Clone)]
