@@ -139,6 +139,7 @@ jobs:
       with:
         toolchain: ${{ steps.vars.outputs.TOOLCHAIN }}
         target: ${{ matrix.job.target }}
+        components: rustfmt
         default: true
     - name: Info
       shell: bash

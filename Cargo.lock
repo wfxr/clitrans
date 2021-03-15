@@ -237,10 +237,10 @@ version = "0.3.3-rc.0"
 dependencies = [
  "anyhow",
  "colored",
- "indoc",
  "isahc",
  "itertools",
  "lazy_static",
+ "quote",
  "regex",
  "rodio",
  "scraper",
@@ -248,6 +248,7 @@ dependencies = [
  "serde_json",
  "structopt",
  "url",
+ "xshell",
 ]
 
 [[package]]
@@ -770,15 +771,6 @@ dependencies = [
  "matches",
  "unicode-bidi",
  "unicode-normalization",
-]
-
-[[package]]
-name = "indoc"
-version = "1.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e5a75aeaaef0ce18b58056d306c27b07436fbb34b8816c53094b76dd81803136"
-dependencies = [
- "unindent",
 ]
 
 [[package]]
@@ -2153,12 +2145,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f7fe0bb3479651439c9112f72b6c505038574c9fbb575ed1bf3b797fa39dd564"
 
 [[package]]
-name = "unindent"
-version = "0.1.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f14ee04d9415b52b3aeab06258a3f07093182b88ba0f9b8d203f211a7a7d41c7"
-
-[[package]]
 name = "unreachable"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2373,3 +2359,18 @@ checksum = "244c3741f4240ef46274860397c7c74e50eb23624996930e484c16679633a54c"
 dependencies = [
  "libc",
 ]
+
+[[package]]
+name = "xshell"
+version = "0.1.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6f18102278453c8f70ea5c514ac78cb4c73a0ef72a8273d17094b52f9584c0c1"
+dependencies = [
+ "xshell-macros",
+]
+
+[[package]]
+name = "xshell-macros"
+version = "0.1.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6093c460064572007f885facc70bb0ca5e40a83ea7ff8b16c1abbee56fd2e767"

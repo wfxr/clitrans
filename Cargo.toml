@@ -52,9 +52,10 @@ default-features = false
 features = ["text-decoding", "static-ssl"]
 
 [build-dependencies]
-indoc = "1.0"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = { version = "1.0", features = ["raw_value"] }
+quote = "^1.0.9"
+serde = { version = "^1.0", features = ["derive"] }
+serde_json = { version = "^1.0", features = ["raw_value"] }
+xshell = "^0.1.9"
 
 [build-dependencies.structopt]
 version = "0.3"
