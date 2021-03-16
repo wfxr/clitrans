@@ -70,13 +70,16 @@ Prebuilt versions of `clitrans` for various architectures are available at [Gith
 
 #### From source
 
-`clitrans` is also published on [crates.io](https://crates.io). If you have Rust toolchains (1.40 or above) installed you can use `cargo` to install it from source:
+`clitrans` is also published on [crates.io](https://crates.io). If you have Rust toolchains installed you can use `cargo` to install it from source:
 
 ```
-cargo install --locked clitrans --features audio
+cargo install --locked clitrans
 ```
 
-If you want the latest version, clone this repository and run `cargo build --release`.
+If you want the latest version, install it from this repository:
+```
+cargo install --git https://github.com/wfxr/clitrans --locked
+```
 
 ### Related Project
 
