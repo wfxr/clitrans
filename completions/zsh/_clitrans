@@ -15,8 +15,8 @@ _clitrans() {
 
     local context curcontext="$curcontext" state line
     _arguments "${_arguments_options[@]}" \
-'-e+[Translate engine]' \
-'--engine=[Translate engine]' \
+'-e+[Translate engine]: :(youdao bing)' \
+'--engine=[Translate engine]: :(youdao bing)' \
 '--explanations=[How many explanations to display]' \
 '--phonetics=[How many phonetics to display]' \
 '-p+[How many web phrases to display]' \

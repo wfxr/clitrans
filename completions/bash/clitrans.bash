@@ -34,11 +34,11 @@ _clitrans() {
             case "${prev}" in
                 
                 --engine)
-                    COMPREPLY=($(compgen -f "${cur}"))
+                    COMPREPLY=($(compgen -W "youdao bing" -- "${cur}"))
                     return 0
                     ;;
                     -e)
-                    COMPREPLY=($(compgen -f "${cur}"))
+                    COMPREPLY=($(compgen -W "youdao bing" -- "${cur}"))
                     return 0
                     ;;
                 --explanations)

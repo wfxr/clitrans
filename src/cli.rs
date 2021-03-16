@@ -13,23 +13,30 @@ pub struct Opts {
     pub query: Option<String>,
 
     /// Translate engine
-    #[structopt(short, long, default_value = "bing", case_insensitive = true)]
+    #[structopt(
+        short,
+        long,
+        env = "CLITRANS_ENGINE",
+        default_value = "bing",
+        possible_values = &Engine::variants(),
+        case_insensitive = true
+    )]
     pub engine: Engine,
 
     /// How many explanations to display
-    #[structopt(long, default_value = "20")]
+    #[structopt(long, env = "CLITRANS_EXPLANATIONS", default_value = "20")]
     pub explanations: usize,
 
     /// How many phonetics to display
-    #[structopt(long, default_value = "2")]
+    #[structopt(long, env = "CLITRANS_PHONETICS", default_value = "2")]
     pub phonetics: usize,
 
     /// How many web phrases to display
-    #[structopt(short, long, default_value = "3")]
+    #[structopt(short, long, env = "CLITRANS_PHRASES", default_value = "3")]
     pub phrases: usize,
 
     /// Play pronounce audio (if any)
-    #[structopt(short, long)]
+    #[structopt(short, long, env = "CLITRANS_AUDIO")]
     pub audio: Option<String>,
 
     /// Subcommand
