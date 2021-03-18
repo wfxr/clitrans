@@ -1,6 +1,6 @@
 mod cli;
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use cli::*;
 use clitrans::{engine::*, Layout, Translate, Translation};
 use std::sync::mpsc;
@@ -76,6 +76,7 @@ fn translate(query: &str, opts: &Opts, layout: &Layout) -> Result<()> {
         let (id, trans) = rx.recv().expect("failed receiving translation");
         match (id, trans) {
             (0, Err(e)) => return Err(e),
+            (0, Ok(None)) => return Err(anyhow!("translation not found")),
             (_, Err(_)) | (_, Ok(None)) => continue,
             (_, Ok(Some(trans))) => {
                 print(trans, &opts, &layout)?;
