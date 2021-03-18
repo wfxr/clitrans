@@ -87,6 +87,12 @@ cargo install --git https://github.com/wfxr/clitrans --locked
 
 [bing-dict](https://github.com/Shawyeok/bing-dict): A cli wrapper for Bing online dictionary.
 
+### Todo
+
+- [x] Choose fastest engine by default.
+- [ ] Display the engine name?
+- [ ] Add Youdao API based engine.
+
 ### License
 
 `clitrans` is distributed under the terms of both the MIT License and the Apache License 2.0.
