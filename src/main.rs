@@ -1,11 +1,13 @@
 mod cli;
 
-use anyhow::anyhow;
+use anyhow::Result;
 use cli::*;
-use clitrans::{engine::*, Layout, Translate};
+use clitrans::{engine::*, Layout, Translate, Translation};
+use std::sync::mpsc;
 use std::{
+    collections::HashSet,
     io::{self, stdout, Write},
-    process,
+    process, thread,
 };
 
 fn main() {
@@ -22,44 +24,20 @@ fn main() {
     }
 }
 
-fn try_main() -> anyhow::Result<()> {
+fn try_main() -> Result<()> {
     let opts: Opts = Opts::from_args();
     match opts.subcommand {
         Some(Subcommand::Completion(CompletionOpt { shell })) => {
             Opts::clap().gen_completions_to(env!("CARGO_PKG_NAME"), shell, &mut stdout());
         }
         None => {
-            let engine: Box<dyn Translate> = match opts.engine {
-                Engine::bing => Box::new(bing::Translator),
-                Engine::youdao => Box::new(youdao::Translator),
-            };
-
             let layout = Layout {
                 explanations: opts.explanations,
                 phrases:      opts.phrases,
                 phonetics:    opts.phonetics,
             };
-
-            macro_rules! translate {
-                ($query:expr) => {
-                    match engine.translate(&$query)? {
-                        Some(trans) => {
-                            trans.print(&layout);
-                            #[allow(unused_variables)]
-                            if let Some(tag) = &opts.audio {
-                                #[cfg(feature = "audio")]
-                                trans.play_audio(tag)?;
-                                #[cfg(not(feature = "audio"))]
-                                return Err(anyhow!("audio is not enabled"));
-                            }
-                        }
-                        None => return Err(anyhow!("translation not found")),
-                    }
-                };
-            }
-
-            match opts.query {
-                Some(query) => translate!(query),
+            match &opts.query {
+                Some(query) => translate(&query, &opts, &layout)?,
                 None => loop {
                     print!("> ");
                     std::io::stdout().flush()?;
@@ -71,10 +49,55 @@ fn try_main() -> anyhow::Result<()> {
                     if query.trim().is_empty() {
                         continue;
                     }
-                    translate!(query)
+                    translate(&query, &opts, &layout)?
                 },
             }
         }
     }
     Ok(())
+}
+
+fn translate(query: &str, opts: &Opts, layout: &Layout) -> Result<()> {
+    let (tx, rx) = mpsc::channel();
+    let engines: HashSet<_> = opts.engines.iter().cloned().collect();
+    let n = engines.len();
+    for (id, engine) in engines.into_iter().enumerate() {
+        let tx = tx.clone();
+        let query = query.to_string();
+        thread::spawn(move || {
+            let trans = match engine {
+                Engine::bing => bing::Translator.translate(&query),
+                Engine::youdao => youdao::Translator.translate(&query),
+            };
+            tx.send((n - id, trans)) // ignore errors since the receiver may be deallocated
+        });
+    }
+    loop {
+        let (id, trans) = rx.recv().expect("failed receiving translation");
+        match (id, trans) {
+            (0, Err(e)) => return Err(e),
+            (_, Err(_)) | (_, Ok(None)) => continue,
+            (_, Ok(Some(trans))) => {
+                print(trans, &opts, &layout)?;
+                break;
+            }
+        }
+    }
+    Ok(())
+}
+
+fn print(trans: Translation, opts: &Opts, layout: &Layout) -> Result<()> {
+    trans.print(layout);
+    match &opts.audio {
+        Some(_tag) => {
+            cfg_if::cfg_if! {
+                if #[cfg(feature = "audio")] {
+                    trans.play_audio(_tag)
+                } else {
+                    Err(anyhow!("audio is not enabled"))
+                }
+            }
+        }
+        None => Ok(()),
+    }
 }

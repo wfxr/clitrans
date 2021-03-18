@@ -1,4 +1,4 @@
-complete -c clitrans -n "__fish_use_subcommand" -s e -l engine -d 'Translate engine' -r -f -a "youdao bing"
+complete -c clitrans -n "__fish_use_subcommand" -s e -l engines -d 'Translate engine' -r -f -a "youdao bing"
 complete -c clitrans -n "__fish_use_subcommand" -l explanations -d 'How many explanations to display'
 complete -c clitrans -n "__fish_use_subcommand" -l phonetics -d 'How many phonetics to display'
 complete -c clitrans -n "__fish_use_subcommand" -s p -l phrases -d 'How many web phrases to display'

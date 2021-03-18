@@ -9,7 +9,7 @@ use anyhow::Result;
 
 pub use translation::Translation;
 
-pub trait Translate {
+pub trait Translate: Send + Clone {
     fn translate(&self, text: &str) -> Result<Option<Translation>>;
 }
 

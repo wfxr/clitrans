@@ -26,14 +26,14 @@ _clitrans() {
 
     case "${cmd}" in
         clitrans)
-            opts=" -h -V -e -p -a  --help --version --engine --explanations --phonetics --phrases --audio  <QUERY>  completion help"
+            opts=" -h -V -e -p -a  --help --version --engines --explanations --phonetics --phrases --audio  <QUERY>  completion help"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 1 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
             fi
             case "${prev}" in
                 
-                --engine)
+                --engines)
                     COMPREPLY=($(compgen -W "youdao bing" -- "${cur}"))
                     return 0
                     ;;

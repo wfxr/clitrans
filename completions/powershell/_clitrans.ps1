@@ -21,7 +21,7 @@ Register-ArgumentCompleter -Native -CommandName 'clitrans' -ScriptBlock {
     $completions = @(switch ($command) {
         'clitrans' {
             [CompletionResult]::new('-e', 'e', [CompletionResultType]::ParameterName, 'Translate engine')
-            [CompletionResult]::new('--engine', 'engine', [CompletionResultType]::ParameterName, 'Translate engine')
+            [CompletionResult]::new('--engines', 'engines', [CompletionResultType]::ParameterName, 'Translate engine')
             [CompletionResult]::new('--explanations', 'explanations', [CompletionResultType]::ParameterName, 'How many explanations to display')
             [CompletionResult]::new('--phonetics', 'phonetics', [CompletionResultType]::ParameterName, 'How many phonetics to display')
             [CompletionResult]::new('-p', 'p', [CompletionResultType]::ParameterName, 'How many web phrases to display')

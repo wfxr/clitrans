@@ -3,6 +3,7 @@ use regex::Regex;
 use scraper::{ElementRef, Html, Selector};
 use structopt::lazy_static::lazy_static;
 
+#[derive(Clone)]
 pub struct Translator;
 
 impl Translate for Translator {

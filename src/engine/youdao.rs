@@ -2,8 +2,10 @@ use super::*;
 use itertools::Itertools;
 use regex::Regex;
 use scraper::{ElementRef, Html, Selector};
-pub struct Translator;
 use structopt::lazy_static::lazy_static;
+
+#[derive(Clone)]
+pub struct Translator;
 
 impl Translate for Translator {
     fn translate(&self, query: &str) -> Result<Option<Translation>> {

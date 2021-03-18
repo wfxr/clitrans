@@ -16,12 +16,14 @@ pub struct Opts {
     #[structopt(
         short,
         long,
-        env = "CLITRANS_ENGINE",
-        default_value = "bing",
+        env = "CLITRANS_ENGINES",
+        default_value = "bing,youdao",
         possible_values = &Engine::variants(),
-        case_insensitive = true
+        case_insensitive = true,
+        use_delimiter = true,
+        require_delimiter = true,
     )]
-    pub engine: Engine,
+    pub engines: Vec<Engine>,
 
     /// How many explanations to display
     #[structopt(long, env = "CLITRANS_EXPLANATIONS", default_value = "20")]
@@ -59,6 +61,7 @@ pub struct CompletionOpt {
 
 arg_enum! {
     #[allow(non_camel_case_types)]
+    #[derive(PartialEq, Eq, Hash, Clone)]
     pub enum Engine {
         youdao,
         bing,

@@ -16,7 +16,7 @@ edit:completion:arg-completer[clitrans] = [@words]{
     completions = [
         &'clitrans'= {
             cand -e 'Translate engine'
-            cand --engine 'Translate engine'
+            cand --engines 'Translate engine'
             cand --explanations 'How many explanations to display'
             cand --phonetics 'How many phonetics to display'
             cand -p 'How many web phrases to display'
