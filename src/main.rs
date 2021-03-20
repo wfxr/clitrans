@@ -1,30 +1,34 @@
 mod cli;
 
-use anyhow::{anyhow, Result};
+use anyhow::{bail, Result};
 use cli::*;
 use clitrans::{engine::*, Layout, Translate, Translation};
+use rustyline::{error::ReadlineError, Editor};
 use std::sync::mpsc;
 use std::{
     collections::HashSet,
-    io::{self, stdout, Write},
+    io::{self, stdout},
     process, thread,
 };
 
 fn main() {
-    if let Err(e) = try_main() {
-        if let Some(ioerr) = e.root_cause().downcast_ref::<io::Error>() {
-            if ioerr.kind() == io::ErrorKind::BrokenPipe {
-                std::process::exit(0);
+    match try_main() {
+        Err(e) => {
+            if let Some(ioerr) = e.root_cause().downcast_ref::<io::Error>() {
+                if ioerr.kind() == io::ErrorKind::BrokenPipe {
+                    std::process::exit(0);
+                }
             }
+            eprintln!();
+            eprintln!("Messages:");
+            eprintln!("  * {}", e);
+            process::exit(1);
         }
-        eprintln!();
-        eprintln!("Messages:");
-        eprintln!("  * {}", e);
-        process::exit(1);
+        Ok(code) => process::exit(code),
     }
 }
 
-fn try_main() -> Result<()> {
+fn try_main() -> Result<i32> {
     let opts: Opts = Opts::from_args();
     match opts.subcommand {
         Some(Subcommand::Completion(CompletionOpt { shell })) => {
@@ -39,22 +43,24 @@ fn try_main() -> Result<()> {
             match &opts.query {
                 Some(query) => translate(&query, &opts, &layout)?,
                 None => loop {
-                    print!("> ");
-                    std::io::stdout().flush()?;
-                    let mut query = String::new();
-                    if std::io::stdin().read_line(&mut query)? == 0 {
-                        println!();
-                        break;
-                    };
-                    if query.trim().is_empty() {
-                        continue;
+                    let mut rl = Editor::<()>::new();
+                    let line = rl.readline("> ");
+                    match line {
+                        Ok(query) => {
+                            if query.trim().is_empty() {
+                                continue;
+                            }
+                            translate(&query, &opts, &layout)?
+                        }
+                        Err(ReadlineError::Eof) => break,
+                        Err(ReadlineError::Interrupted) => return Ok(1),
+                        Err(e) => bail!(e),
                     }
-                    translate(&query, &opts, &layout)?
                 },
             }
         }
     }
-    Ok(())
+    Ok(0)
 }
 
 fn translate(query: &str, opts: &Opts, layout: &Layout) -> Result<()> {
@@ -76,7 +82,7 @@ fn translate(query: &str, opts: &Opts, layout: &Layout) -> Result<()> {
         let (id, trans) = rx.recv().expect("failed receiving translation");
         match (id, trans) {
             (0, Err(e)) => return Err(e),
-            (0, Ok(None)) => return Err(anyhow!("translation not found")),
+            (0, Ok(None)) => bail!("translation not found"),
             (_, Err(_)) | (_, Ok(None)) => continue,
             (_, Ok(Some(trans))) => {
                 print(trans, &opts, &layout)?;
@@ -88,14 +94,14 @@ fn translate(query: &str, opts: &Opts, layout: &Layout) -> Result<()> {
 }
 
 fn print(trans: Translation, opts: &Opts, layout: &Layout) -> Result<()> {
-    trans.print(layout);
+    trans.print(layout)?;
     match &opts.audio {
         Some(_tag) => {
             cfg_if::cfg_if! {
                 if #[cfg(feature = "audio")] {
                     trans.play_audio(_tag)
                 } else {
-                    Err(anyhow!("audio is not enabled"))
+                    bail!("audio is not enabled")
                 }
             }
         }

@@ -1,10 +1,11 @@
 #[cfg(feature = "audio")]
 use crate::util::audio::play_audio;
 
-use super::Layout;
+use super::{Layout, Result};
 use colored::{Color, Colorize};
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
+use std::io::{self, Write};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Translation {
@@ -91,7 +92,7 @@ pub enum ExpTag {
 
 impl Translation {
     #[cfg(feature = "audio")]
-    pub fn play_audio(&self, tag: &str) -> super::Result<()> {
+    pub fn play_audio(&self, tag: &str) -> Result<()> {
         match self
             .prons
             .iter()
@@ -105,19 +106,18 @@ impl Translation {
                     .iter()
                     .filter_map(|p| p.audio.as_ref().map(|_| &p.tag))
                     .join(", ");
-                let msg = if possibles.is_empty() {
-                    "audio not found".to_string()
+                if possibles.is_empty() {
+                    bail!("audio not found")
                 } else {
-                    format!("audio not found for '{}'; possible values: [{}]", tag, possibles)
+                    bail!("audio not found for '{}'; possible values: [{}]", tag, possibles)
                 };
-                Err(anyhow!(msg))
             }
         }
     }
 
-    pub fn print(&self, layout: &Layout) {
-        self.print_query();
-        self.print_pronunciations(&layout);
+    pub fn print(&self, layout: &Layout) -> Result<()> {
+        self.print_query()?;
+        self.print_pronunciations(&layout)?;
 
         let exps: Vec<_> = self
             .exps
@@ -136,16 +136,17 @@ impl Translation {
             .collect();
         let indent = exps.iter().map(|&(_, tag, _)| tag.len()).max().unwrap_or(0);
 
-        self.print_explanations(&layout, indent, &exps);
-        self.print_phrases(&layout, indent);
-        self.print_link(indent);
+        self.print_explanations(&layout, indent, &exps)?;
+        self.print_phrases(&layout, indent)?;
+        self.print_link(indent)?;
+        Ok(())
     }
 
-    fn print_query(&self) {
-        println!("{}", self.query);
+    fn print_query(&self) -> io::Result<()> {
+        writeln!(io::stdout().lock(), "{}", self.query)
     }
 
-    fn print_pronunciations(&self, layout: &Layout) {
+    fn print_pronunciations(&self, layout: &Layout) -> io::Result<()> {
         if !self.prons.is_empty() && layout.phonetics > 0 {
             let buf = self
                 .prons
@@ -155,11 +156,12 @@ impl Translation {
                 .unique()
                 .map(|s| format!("/{}/", s.yellow()))
                 .join(", ");
-            println!("{}", buf);
+            return writeln!(io::stdout().lock(), "{}", buf);
         }
+        Ok(())
     }
 
-    fn print_explanations(&self, layout: &Layout, indent: usize, exps: &[(Color, &str, &[String])]) {
+    fn print_explanations(&self, layout: &Layout, indent: usize, exps: &[(Color, &str, &[String])]) -> io::Result<()> {
         if !exps.is_empty() && layout.explanations > 0 {
             let buf = exps
                 .iter()
@@ -181,11 +183,12 @@ impl Translation {
                         .join("\n")
                 })
                 .join("\n\n");
-            println!("\n{}", buf);
+            return writeln!(io::stdout().lock(), "\n{}", buf);
         }
+        Ok(())
     }
 
-    fn print_phrases(&self, layout: &Layout, indent: usize) {
+    fn print_phrases(&self, layout: &Layout, indent: usize) -> io::Result<()> {
         if !self.phrases.is_empty() && layout.phrases > 0 {
             let buf = self
                 .phrases
@@ -200,18 +203,20 @@ impl Translation {
                             .join("\n")
                 })
                 .join("\n\n");
-            println!("\n{}\n{}", "Web Phrases:".cyan(), buf);
+            return writeln!(io::stdout().lock(), "\n{}\n{}", "Web Phrases:".cyan(), buf);
         }
+        Ok(())
     }
 
-    fn print_link(&self, indent: usize) {
-        println!(
+    fn print_link(&self, indent: usize) -> io::Result<()> {
+        writeln!(
+            io::stdout().lock(),
             "\n{}\n{:>w$}  {} {}",
             "Source URL:".blue(),
             "",
             "*".blue(),
             self.url.blue(),
             w = indent,
-        );
+        )
     }
 }
