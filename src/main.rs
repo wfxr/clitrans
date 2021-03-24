@@ -81,8 +81,8 @@ fn translate(query: &str, opts: &Opts, layout: &Layout) -> Result<()> {
     loop {
         let (id, trans) = rx.recv().expect("failed receiving translation");
         match (id, trans) {
-            (0, Err(e)) => return Err(e),
-            (0, Ok(None)) => bail!("translation not found"),
+            (1, Err(e)) => return Err(e),
+            (1, Ok(None)) => bail!("translation not found"),
             (_, Err(_)) | (_, Ok(None)) => continue,
             (_, Ok(Some(trans))) => {
                 print(trans, &opts, &layout)?;
