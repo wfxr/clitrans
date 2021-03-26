@@ -89,9 +89,12 @@ cargo install --git https://github.com/wfxr/clitrans --locked
 
 ### Todo
 
-- [x] Choose fastest engine by default.
+- [x] Dynamically choosing the fastest engine.
+- [ ] Support force color ouput.
+- [ ] Fzf integration.
+- [ ] Vim integration.
 - [ ] Display the engine name?
-- [ ] Add Youdao API based engine.
+- [ ] Support Youdao API based engine.
 
 ### License
 
