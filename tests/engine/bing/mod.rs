@@ -41,10 +41,11 @@ fn cn_word() {
   }"#,
     )
     .unwrap();
-    assert_eq!(r.query, expected.query, "{}", serde_json::to_string(&r).unwrap());
-    assert_eq!(r.url, expected.url, "{}", serde_json::to_string(&r).unwrap());
-    assert_eq!(r.exps, expected.exps);
-    assert_eq!(r.phrases, expected.phrases);
+    let msg = format!("\n=== Json dump:\n{}\n=== ", serde_json::to_string(&r).unwrap());
+    assert_eq!(r.query, expected.query, "{}", msg);
+    assert_eq!(r.url, expected.url, "{}", msg);
+    assert_eq!(r.exps, expected.exps, "{}", msg);
+    assert_eq!(r.phrases, expected.phrases, "{}", msg);
 }
 #[test]
 fn cn_phrase() {
@@ -72,10 +73,11 @@ fn cn_phrase() {
   }"#,
     )
     .unwrap();
-    assert_eq!(r.query, expected.query, "{}", serde_json::to_string(&r).unwrap());
-    assert_eq!(r.url, expected.url, "{}", serde_json::to_string(&r).unwrap());
-    assert_eq!(r.exps, expected.exps);
-    assert_eq!(r.phrases, expected.phrases);
+    let msg = format!("\n=== Json dump:\n{}\n=== ", serde_json::to_string(&r).unwrap());
+    assert_eq!(r.query, expected.query, "{}", msg);
+    assert_eq!(r.url, expected.url, "{}", msg);
+    assert_eq!(r.exps, expected.exps, "{}", msg);
+    assert_eq!(r.phrases, expected.phrases, "{}", msg);
 }
 #[test]
 fn en_word() {
@@ -119,10 +121,11 @@ fn en_word() {
     }],
     "phrases": []
   }"#) . unwrap () ;
-    assert_eq!(r.query, expected.query, "{}", serde_json::to_string(&r).unwrap());
-    assert_eq!(r.url, expected.url, "{}", serde_json::to_string(&r).unwrap());
-    assert_eq!(r.exps, expected.exps);
-    assert_eq!(r.phrases, expected.phrases);
+    let msg = format!("\n=== Json dump:\n{}\n=== ", serde_json::to_string(&r).unwrap());
+    assert_eq!(r.query, expected.query, "{}", msg);
+    assert_eq!(r.url, expected.url, "{}", msg);
+    assert_eq!(r.exps, expected.exps, "{}", msg);
+    assert_eq!(r.phrases, expected.phrases, "{}", msg);
 }
 #[test]
 fn en_phrase() {
@@ -158,10 +161,11 @@ fn en_phrase() {
   }"#,
     )
     .unwrap();
-    assert_eq!(r.query, expected.query, "{}", serde_json::to_string(&r).unwrap());
-    assert_eq!(r.url, expected.url, "{}", serde_json::to_string(&r).unwrap());
-    assert_eq!(r.exps, expected.exps);
-    assert_eq!(r.phrases, expected.phrases);
+    let msg = format!("\n=== Json dump:\n{}\n=== ", serde_json::to_string(&r).unwrap());
+    assert_eq!(r.query, expected.query, "{}", msg);
+    assert_eq!(r.url, expected.url, "{}", msg);
+    assert_eq!(r.exps, expected.exps, "{}", msg);
+    assert_eq!(r.phrases, expected.phrases, "{}", msg);
 }
 
 // vim: ro

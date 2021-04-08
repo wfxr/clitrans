@@ -35,10 +35,11 @@ fn cn_word() {
   }"#,
     )
     .unwrap();
-    assert_eq!(r.query, expected.query, "{}", serde_json::to_string(&r).unwrap());
-    assert_eq!(r.url, expected.url, "{}", serde_json::to_string(&r).unwrap());
-    assert_eq!(r.exps, expected.exps);
-    assert_eq!(r.phrases, expected.phrases);
+    let msg = format!("\n=== Json dump:\n{}\n=== ", serde_json::to_string(&r).unwrap());
+    assert_eq!(r.query, expected.query, "{}", msg);
+    assert_eq!(r.url, expected.url, "{}", msg);
+    assert_eq!(r.exps, expected.exps, "{}", msg);
+    assert_eq!(r.phrases, expected.phrases, "{}", msg);
 }
 #[test]
 fn cn_phrase() {
@@ -62,18 +63,16 @@ fn cn_phrase() {
     }],
     "phrases": [
       ["你好世界", ["hello world"]],
-      ["你好世界新闻和密钥", ["hello world press and key"]],
-      ["你好世界新闻和关键", ["hello world press and key"]],
-      ["你好世界命令行参数", ["hello world command line args"]],
-      ["世界你好", ["Hello World", "World how are"]]
+      ["你好世界新闻和密钥", ["hello world press and key"]]
     ]
   }"#,
     )
     .unwrap();
-    assert_eq!(r.query, expected.query, "{}", serde_json::to_string(&r).unwrap());
-    assert_eq!(r.url, expected.url, "{}", serde_json::to_string(&r).unwrap());
-    assert_eq!(r.exps, expected.exps);
-    assert_eq!(r.phrases, expected.phrases);
+    let msg = format!("\n=== Json dump:\n{}\n=== ", serde_json::to_string(&r).unwrap());
+    assert_eq!(r.query, expected.query, "{}", msg);
+    assert_eq!(r.url, expected.url, "{}", msg);
+    assert_eq!(r.exps, expected.exps, "{}", msg);
+    assert_eq!(r.phrases, expected.phrases, "{}", msg);
 }
 #[test]
 fn en_word() {
@@ -103,12 +102,22 @@ fn en_word() {
       "items": ["喂", "哈罗，你好，您好（表示问候， 惊奇或唤起注意时的用语）"]
     }, {
       "tag": {
+        "Pos": "vi."
+      },
+      "items": ["说（或大声说）“喂”", "打招呼"]
+    }, {
+      "tag": {
+        "Pos": "n."
+      },
+      "items": ["“喂”的招呼声", "打招呼，问候"]
+    }, {
+      "tag": {
         "Pos": "n."
       },
       "items": ["（Hello）（法）埃洛（人名）"]
     }, {
       "tag": "Web",
-      "items": ["你好", "您好", "哈啰", "喂"]
+      "items": ["您好", "哈啰", "喂"]
     }],
     "phrases": [
       ["Hello Kitty", ["凯蒂猫", "吉蒂猫"]],
@@ -117,10 +126,11 @@ fn en_word() {
   }"#,
     )
     .unwrap();
-    assert_eq!(r.query, expected.query, "{}", serde_json::to_string(&r).unwrap());
-    assert_eq!(r.url, expected.url, "{}", serde_json::to_string(&r).unwrap());
-    assert_eq!(r.exps, expected.exps);
-    assert_eq!(r.phrases, expected.phrases);
+    let msg = format!("\n=== Json dump:\n{}\n=== ", serde_json::to_string(&r).unwrap());
+    assert_eq!(r.query, expected.query, "{}", msg);
+    assert_eq!(r.url, expected.url, "{}", msg);
+    assert_eq!(r.exps, expected.exps, "{}", msg);
+    assert_eq!(r.phrases, expected.phrases, "{}", msg);
 }
 #[test]
 fn en_phrase() {
@@ -143,22 +153,23 @@ fn en_phrase() {
       "items": []
     }],
     "phrases": [
-      ["hello world", ["你好世界", "开始", "别来无恙", "举个例子"]],
-      ["Hello world UI", ["实现方法"]],
       ["hello world press and key", ["您好世界新闻和关键", "你好世界新闻和密钥"]],
       ["Hello world only", ["世间只有你好"]],
       ["Hello world always", ["世间始终你好"]],
       ["air hello world", ["调税计算器"]],
-      ["Hello Kitty Cutie World", ["凯蒂猫顽皮世界"]],
-      ["Hello world DIY", ["西雅图"]]
+      ["Hello world DIY", ["西雅图"]],
+      ["Hello World ActiveX DLL", ["创建"]],
+      ["world hello day", ["世界问候日"]],
+      ["hello world program in c", ["说明"]]
     ]
   }"#,
     )
     .unwrap();
-    assert_eq!(r.query, expected.query, "{}", serde_json::to_string(&r).unwrap());
-    assert_eq!(r.url, expected.url, "{}", serde_json::to_string(&r).unwrap());
-    assert_eq!(r.exps, expected.exps);
-    assert_eq!(r.phrases, expected.phrases);
+    let msg = format!("\n=== Json dump:\n{}\n=== ", serde_json::to_string(&r).unwrap());
+    assert_eq!(r.query, expected.query, "{}", msg);
+    assert_eq!(r.url, expected.url, "{}", msg);
+    assert_eq!(r.exps, expected.exps, "{}", msg);
+    assert_eq!(r.phrases, expected.phrases, "{}", msg);
 }
 
 // vim: ro

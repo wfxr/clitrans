@@ -73,10 +73,11 @@ fn gen_tests() -> Result<()> {
                         let r = r.unwrap();
 
                         let expected : Translation = serde_json::from_str(r#"{#expect}"#).unwrap();
-                        assert_eq!(r.query, expected.query, "{}", serde_json::to_string(&r).unwrap());
-                        assert_eq!(r.url, expected.url, "{}", serde_json::to_string(&r).unwrap());
-                        assert_eq!(r.exps, expected.exps);
-                        assert_eq!(r.phrases, expected.phrases);
+                        let msg = format!("\n=== Json dump:\n{}\n=== ", serde_json::to_string(&r).unwrap());
+                        assert_eq!(r.query, expected.query, "{}", msg);
+                        assert_eq!(r.url, expected.url, "{}", msg);
+                        assert_eq!(r.exps, expected.exps, "{}", msg);
+                        assert_eq!(r.phrases, expected.phrases, "{}", msg);
                     }
                 };
                 let test_fn = test_fn.to_string().replace("{#expect}", &expect);
