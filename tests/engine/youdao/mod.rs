@@ -63,7 +63,10 @@ fn cn_phrase() {
     }],
     "phrases": [
       ["你好世界", ["hello world"]],
-      ["你好世界新闻和密钥", ["hello world press and key"]]
+      ["你好世界新闻和密钥", ["hello world press and key"]],
+      ["你好世界新闻和关键", ["hello world press and key"]],
+      ["你好世界命令行参数", ["hello world command line args"]],
+      ["世界你好", ["Hello World", "World how are"]]
     ]
   }"#,
     )
@@ -153,14 +156,14 @@ fn en_phrase() {
       "items": []
     }],
     "phrases": [
+      ["hello world", ["你好世界", "开始", "别来无恙", "举个例子"]],
+      ["Hello world UI", ["实现方法"]],
       ["hello world press and key", ["您好世界新闻和关键", "你好世界新闻和密钥"]],
       ["Hello world only", ["世间只有你好"]],
       ["Hello world always", ["世间始终你好"]],
       ["air hello world", ["调税计算器"]],
-      ["Hello world DIY", ["西雅图"]],
-      ["Hello World ActiveX DLL", ["创建"]],
-      ["world hello day", ["世界问候日"]],
-      ["hello world program in c", ["说明"]]
+      ["Hello Kitty Cutie World", ["凯蒂猫顽皮世界"]],
+      ["Hello world DIY", ["西雅图"]]
     ]
   }"#,
     )
