@@ -45,11 +45,11 @@ default-features = false
 features = ["wrap_help", "color"]
 
 [target.'cfg(not(target_env = "musl"))'.dependencies.isahc]
-version = "^1.4"
+version = "^1.5"
 default-features = false
 features = ["text-decoding"]
 [target.'cfg(target_env = "musl")'.dependencies.isahc]
-version = "^1.4"
+version = "^1.5"
 default-features = false
 features = ["text-decoding", "static-ssl"]
 

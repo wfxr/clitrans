@@ -41,7 +41,7 @@ fn try_main() -> Result<i32> {
                 phonetics:    opts.phonetics,
             };
             match &opts.query {
-                Some(query) => translate(&query, &opts, &layout)?,
+                Some(query) => translate(query, &opts, &layout)?,
                 None => loop {
                     let mut rl = Editor::<()>::new();
                     let line = rl.readline("> ");
@@ -85,7 +85,7 @@ fn translate(query: &str, opts: &Opts, layout: &Layout) -> Result<()> {
             (1, Ok(None)) => bail!("translation not found"),
             (_, Err(_)) | (_, Ok(None)) => continue,
             (_, Ok(Some(trans))) => {
-                print(trans, &opts, &layout)?;
+                print(trans, opts, layout)?;
                 break;
             }
         }
