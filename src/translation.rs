@@ -117,7 +117,7 @@ impl Translation {
 
     pub fn print(&self, layout: &Layout) -> Result<()> {
         self.print_query()?;
-        self.print_pronunciations(&layout)?;
+        self.print_pronunciations(layout)?;
 
         let exps: Vec<_> = self
             .exps
@@ -136,8 +136,8 @@ impl Translation {
             .collect();
         let indent = exps.iter().map(|&(_, tag, _)| tag.len()).max().unwrap_or(0);
 
-        self.print_explanations(&layout, indent, &exps)?;
-        self.print_phrases(&layout, indent)?;
+        self.print_explanations(layout, indent, &exps)?;
+        self.print_phrases(layout, indent)?;
         self.print_link(indent)?;
         Ok(())
     }

@@ -20,7 +20,7 @@ impl Translate for Translator {
 }
 
 fn parse(url: &Uri, body: &str) -> Option<Translation> {
-    let root = Html::parse_document(&body);
+    let root = Html::parse_document(body);
     let content = get_element(
         &root,
         r#"
