@@ -24,7 +24,7 @@ fn cn_word() {
       "items": ["hello", "hi", "how do you do"]
     }, {
       "tag": "Web",
-      "items": ["Hello", "How do you do", "hi"]
+      "items": ["Hello", "How do you do", "hi", "What's up"]
     }],
     "phrases": [
       ["你好吗", ["How are you", "How Do You Do", "Are You OK"]],
@@ -56,7 +56,7 @@ fn cn_phrase() {
     "prons": [],
     "exps": [{
       "tag": "Machine",
-      "items": ["Hello, World"]
+      "items": ["Hello, world"]
     }, {
       "tag": "Web",
       "items": []
