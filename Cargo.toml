@@ -35,7 +35,7 @@ rodio = { version = "^0.15", optional = true }
 lazy_static = "^1"
 serde = { version = "^1.0", features = ["derive"] }
 serde_json = "^1.0"
-anyhow = "^1.0.59"
+anyhow = "^1.0.60"
 cfg-if = "^1.0.0"
 rustyline = "^10.0.0"
 
