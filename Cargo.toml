@@ -29,7 +29,7 @@ audio = ["rodio"]
 colored = "^2.0"
 itertools = "^0.10"
 regex = "^1.4"
-scraper = "^0.13"
+scraper = "^0.14"
 url = "^2.3"
 rodio = { version = "^0.16", optional = true }
 lazy_static = "^1"
