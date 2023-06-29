@@ -54,7 +54,7 @@ default-features = false
 features = ["text-decoding", "static-ssl"]
 
 [build-dependencies]
-quote = "^1.0.21"
+quote = "^1.0.29"
 serde = { version = "^1.0", features = ["derive"] }
 serde_json = { version = "^1.0", features = ["raw_value"] }
 xshell = "^0.2.2"
