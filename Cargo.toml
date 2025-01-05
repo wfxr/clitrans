@@ -26,41 +26,41 @@ full = ["audio"]
 audio = ["rodio"]
 
 [dependencies]
-colored = "^2.0"
-itertools = "^0.10"
-regex = "^1.4"
-scraper = "^0.13"
-url = "^2.3"
-rodio = { version = "^0.16", optional = true }
-lazy_static = "^1"
-serde = { version = "^1.0", features = ["derive"] }
-serde_json = "^1.0"
-anyhow = "^1.0.68"
-cfg-if = "^1.0.0"
-rustyline = "^10.0.0"
+colored = "2"
+itertools = "0.14"
+regex = "1"
+scraper = "0.22"
+url = "2.5"
+rodio = { version = "0.20", optional = true }
+lazy_static = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+cfg-if = "1"
+rustyline = "15"
 
 [dependencies.structopt]
-version = "^0.3"
+version = "0.3"
 default-features = false
 features = ["wrap_help", "color"]
 
 [target.'cfg(not(target_env = "musl"))'.dependencies.isahc]
-version = "^1.7"
+version = "1"
 default-features = false
 features = ["text-decoding"]
 [target.'cfg(target_env = "musl")'.dependencies.isahc]
-version = "^1.7"
+version = "1"
 default-features = false
 features = ["text-decoding", "static-ssl"]
 
 [build-dependencies]
-quote = "^1.0.21"
-serde = { version = "^1.0", features = ["derive"] }
-serde_json = { version = "^1.0", features = ["raw_value"] }
-xshell = "^0.2.2"
+quote = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["raw_value"] }
+xshell = "0.2"
 
 [build-dependencies.structopt]
-version = "^0.3"
+version = "0.3"
 features = ["wrap_help"]
 default-features = false
 

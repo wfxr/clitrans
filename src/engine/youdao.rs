@@ -83,7 +83,7 @@ fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
             prons.push(Pronunciation::uk(caps[1].to_owned()).audio(audio));
         }
     }
-    if let Some(s) = get_text(detail, "#phrsListTab > h2 > span.phonetic").get(0) {
+    if let Some(s) = get_text(detail, "#phrsListTab > h2 > span.phonetic").first() {
         prons.push(Pronunciation::pinyin(
             s.as_str().trim_matches(&['[', ']'][..]).to_owned(),
         ));
@@ -148,17 +148,14 @@ fn parse_explanation_machine(detail: ElementRef) -> Option<Explanation> {
     let value = get_text(detail, "#fanyiToggle > div > p:nth-child(2)")
         .into_iter()
         .next()?;
-    Some(Explanation {
-        tag:   ExpTag::Machine,
-        items: vec![value],
-    })
+    Some(Explanation { tag: ExpTag::Machine, items: vec![value] })
 }
 
 fn parse_explanation_web(detail: ElementRef) -> Vec<Explanation> {
     let texts = get_text(detail, "#tWebTrans > div.wt-container > .title");
-    let items = texts.iter().map(|s| s.split_whitespace().join(" ")).collect();
-    vec![Explanation {
-        tag: ExpTag::Web,
-        items,
-    }]
+    let items = texts
+        .iter()
+        .map(|s| s.split_whitespace().join(" "))
+        .collect();
+    vec![Explanation { tag: ExpTag::Web, items }]
 }

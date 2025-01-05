@@ -1,13 +1,17 @@
 pub mod bing;
 pub mod youdao;
 
-use super::translation::{ExpTag, Explanation, Pronunciation, Translation};
-use super::util::html::*;
-use super::{Result, Translate};
+use super::{
+    translation::{ExpTag, Explanation, Pronunciation, Translation},
+    util::html::*,
+    Result,
+    Translate,
+};
 
 use isahc::{
     http::{self, Request, Uri},
-    ReadResponseExt, RequestExt,
+    ReadResponseExt,
+    RequestExt,
 };
 use url::Url;
 

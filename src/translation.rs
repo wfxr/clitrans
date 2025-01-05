@@ -50,25 +50,13 @@ pub struct Pronunciation {
 
 impl Pronunciation {
     pub fn pinyin(value: String) -> Self {
-        Self {
-            tag: "CN".to_owned(),
-            value,
-            audio: None,
-        }
+        Self { tag: "CN".to_owned(), value, audio: None }
     }
     pub fn us(value: String) -> Self {
-        Self {
-            tag: "US".to_owned(),
-            value,
-            audio: None,
-        }
+        Self { tag: "US".to_owned(), value, audio: None }
     }
     pub fn uk(value: String) -> Self {
-        Self {
-            tag: "UK".to_owned(),
-            value,
-            audio: None,
-        }
+        Self { tag: "UK".to_owned(), value, audio: None }
     }
     pub fn audio(mut self, url: Option<String>) -> Self {
         self.audio = url;
@@ -109,7 +97,11 @@ impl Translation {
                 if possibles.is_empty() {
                     bail!("audio not found")
                 } else {
-                    bail!("audio not found for '{}'; possible values: [{}]", tag, possibles)
+                    bail!(
+                        "audio not found for '{}'; possible values: [{}]",
+                        tag,
+                        possibles
+                    )
                 };
             }
         }
@@ -161,7 +153,12 @@ impl Translation {
         Ok(())
     }
 
-    fn print_explanations(&self, layout: &Layout, indent: usize, exps: &[(Color, &str, &[String])]) -> io::Result<()> {
+    fn print_explanations(
+        &self,
+        layout: &Layout,
+        indent: usize,
+        exps: &[(Color, &str, &[String])],
+    ) -> io::Result<()> {
         if !exps.is_empty() && layout.explanations > 0 {
             let buf = exps
                 .iter()
@@ -199,7 +196,9 @@ impl Translation {
                     format!("{:>w$}  {} {}\n", "", "*".cyan(), phrase.cyan(), w = indent)
                         + &exps
                             .iter()
-                            .map(|exp| format!("{:>w$}    {} {}", "", "-".cyan(), exp.cyan(), w = indent))
+                            .map(|exp| {
+                                format!("{:>w$}    {} {}", "", "-".cyan(), exp.cyan(), w = indent)
+                            })
                             .join("\n")
                 })
                 .join("\n\n");

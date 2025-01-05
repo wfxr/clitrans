@@ -8,7 +8,12 @@ pub struct Translator;
 
 impl Translate for Translator {
     fn translate(&self, input: &str) -> Result<Option<Translation>> {
-        let uri = format_url!("https://cn.bing.com/dict/search?q={}&mkt={}", input, "zh-cn")?.to_uri()?;
+        let uri = format_url!(
+            "https://cn.bing.com/dict/search?q={}&mkt={}",
+            input,
+            "zh-cn"
+        )?
+        .to_uri()?;
         let resp = Request::get(&uri)
             .header("Accept-Encoding", "gzip")
             .header("Accept-Language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7")
@@ -66,11 +71,15 @@ fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
                 let pron: String = div.text().collect();
                 let audio = it.next().and_then(|div| {
                     div.children().next().and_then(|a| {
-                        a.value().as_element().unwrap().attr("onclick").and_then(|s| {
-                            RE_MP3
-                                .captures(s)
-                                .and_then(|caps| caps.get(0).map(|url| url.as_str().to_owned()))
-                        })
+                        a.value()
+                            .as_element()
+                            .unwrap()
+                            .attr("onclick")
+                            .and_then(|s| {
+                                RE_MP3
+                                    .captures(s)
+                                    .and_then(|caps| caps.get(0).map(|url| url.as_str().to_owned()))
+                            })
                     })
                 });
                 if let Some(caps) = RE_US.captures(&pron) {
@@ -90,13 +99,26 @@ fn parse_explanation(detail: ElementRef) -> Vec<Explanation> {
     let s_def = Selector::parse(".def").unwrap();
     let mut exps = vec![];
     for li in detail.select(&s_li) {
-        let pos: String = li.select(&s_pos).next().expect("pos not found").text().collect();
-        let def: String = li.select(&s_def).next().expect("def not found").text().collect();
+        let pos: String = li
+            .select(&s_pos)
+            .next()
+            .expect("pos not found")
+            .text()
+            .collect();
+        let def: String = li
+            .select(&s_def)
+            .next()
+            .expect("def not found")
+            .text()
+            .collect();
         let tag = match pos.trim() {
             "网络" => ExpTag::Web,
             s => ExpTag::Pos(s.to_owned()),
         };
-        let items = def.split(&['；', ';'][..]).map(|v| v.trim().to_owned()).collect();
+        let items = def
+            .split(&['；', ';'][..])
+            .map(|v| v.trim().to_owned())
+            .collect();
         exps.push(Explanation { tag, items });
     }
     exps

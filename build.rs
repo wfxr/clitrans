@@ -22,10 +22,16 @@ fn main() -> Result<()> {
 
 // Stealing from https://github.com/rust-analyzer/rust-analyzer/blob/5f6d71cf/xtask/src/codegen.rs#L74
 fn reformat(text: &str) -> Result<String> {
-    let rustfmt_toml = ".rustfmt.toml";
-    let stdout = cmd!("rustfmt --config-path {rustfmt_toml}").stdin(text).read()?;
+    let sh = xshell::Shell::new()?;
+    let rustfmt_toml = "rustfmt.toml";
+    let stdout = cmd!(sh, "rustfmt --config-path {rustfmt_toml}")
+        .stdin(text)
+        .read()?;
     let preamble = "Generated file, do not edit by hand, see `/build.rs`";
-    Ok(format!("//! {}\n\n{}\n\n{}\n", preamble, stdout, "// vim: ro"))
+    Ok(format!(
+        "//! {}\n\n{}\n\n{}\n",
+        preamble, stdout, "// vim: ro"
+    ))
 }
 
 fn gen_completions() -> Result<()> {
@@ -50,14 +56,10 @@ fn gen_tests() -> Result<()> {
         if !test_data.is_empty() {
             let mut buf = BufWriter::new(Vec::new());
             let key = format_ident!("{}", key);
-            writeln!(
-                &mut buf,
-                "{}",
-                quote! {
-                    use clitrans::engine::#key::Translator;
-                    use clitrans::{{Translate, Translation}};
-                }
-            )?;
+            writeln!(&mut buf, "{}", quote! {
+                use clitrans::engine::#key::Translator;
+                use clitrans::{{Translate, Translation}};
+            })?;
             for item in test_data.into_iter() {
                 let name = format_ident!("{}", item.name);
                 let input = item.input;

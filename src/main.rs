@@ -3,12 +3,13 @@ mod cli;
 use anyhow::{bail, Result};
 use cli::*;
 use clitrans::{engine::*, Layout, Translate, Translation};
-use rustyline::{error::ReadlineError, Editor};
-use std::sync::mpsc;
+use rustyline::{error::ReadlineError, DefaultEditor};
 use std::{
     collections::HashSet,
     io::{self, stdout},
-    process, thread,
+    process,
+    sync::mpsc,
+    thread,
 };
 
 fn main() {
@@ -43,7 +44,7 @@ fn try_main() -> Result<i32> {
             match &opts.query {
                 Some(query) => translate(query, &opts, &layout)?,
                 None => loop {
-                    let mut rl = Editor::<()>::new();
+                    let mut rl = DefaultEditor::new()?;
                     let line = rl.readline("> ");
                     match line {
                         Ok(query) => {
