@@ -1,6 +1,6 @@
 [package]
 name = "clitrans"
-version = "0.3.6-dev"
+version = "0.4.0"
 authors = ["Wenxuan Zhang <wenxuangm@gmail.com>"]
 description = "Yet another command-line translator"
 categories = ["command-line-utilities"]
