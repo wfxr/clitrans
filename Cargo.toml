@@ -32,25 +32,15 @@ regex = "1"
 scraper = "0.22"
 url = "2.5"
 rodio = { version = "0.20", optional = true }
-lazy_static = "1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 anyhow = "1"
 cfg-if = "1"
 rustyline = "15"
-
 clap = { version = "4", features = ["wrap_help", "derive", "env", "color"] }
 clap_complete = { version = "4" }
 constcat = "0.5"
-
-[target.'cfg(not(target_env = "musl"))'.dependencies.isahc]
-version = "1"
-default-features = false
-features = ["text-decoding"]
-[target.'cfg(target_env = "musl")'.dependencies.isahc]
-version = "1"
-default-features = false
-features = ["text-decoding", "static-ssl"]
+ureq = { version = "2", features = ["proxy-from-env", "json", "socks-proxy"] }
 
 [build-dependencies]
 anyhow = "1"

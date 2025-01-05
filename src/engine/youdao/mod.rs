@@ -13,18 +13,17 @@ pub struct Translator;
 
 impl Translate for Translator {
     fn translate(&self, query: &str) -> Result<Option<Translation>> {
-        let uri = format_url!("http://dict.youdao.com/w/{}", query)?.to_uri()?;
-        let resp = Request::get(&uri)
-            .header("Accept-Encoding", "gzip")
-            .header("Accept-Language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7")
-            .body(())?
-            .send()?
-            .text()?;
-        Ok(parse(&uri, &resp))
+        let url = format!("http://dict.youdao.com/w/{query}");
+        let resp = ureq::get(&url)
+            .set("Accept-Encoding", "gzip")
+            .set("Accept-Language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7")
+            .call()?
+            .into_string()?;
+        Ok(parse(url, &resp))
     }
 }
 
-fn parse(url: &Uri, body: &str) -> Option<Translation> {
+fn parse(url: String, body: &str) -> Option<Translation> {
     let root = Html::parse_document(body);
     let content = get_element(&root, "#results-contents")?;
     let query = get_text(content, "#phrsListTab > h2 > .keyword")
@@ -39,7 +38,7 @@ fn parse(url: &Uri, body: &str) -> Option<Translation> {
     let exps = parse_explanation(content);
     let phrases = parse_phrases(content);
     Some(
-        Translation::new(query, url.to_string())
+        Translation::new(query, url)
             .pronunciations(prons)
             .explanations(exps)
             .phrases(phrases),
@@ -75,10 +74,7 @@ fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
             .select(&audio_selector)
             .next()
             .and_then(|a| a.value().attr("data-rel"))
-            .map(|data_rel| format_url!("https://dict.youdao.com/dictvoice?audio={}", data_rel))
-            .transpose()
-            .expect("failed to parse the audio url")
-            .map(|url| url.to_string());
+            .map(|data_rel| format!("https://dict.youdao.com/dictvoice?audio={data_rel}"));
         if let Some(caps) = RE_US.captures(&text) {
             prons.push(Pronunciation::us(caps[1].to_owned()).audio(audio));
         } else if let Some(caps) = RE_UK.captures(&text) {

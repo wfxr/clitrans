@@ -12,23 +12,17 @@ pub struct Translator;
 
 impl Translate for Translator {
     fn translate(&self, input: &str) -> Result<Option<Translation>> {
-        let uri = format_url!(
-            "https://cn.bing.com/dict/search?q={}&mkt={}",
-            input,
-            "zh-cn"
-        )?
-        .to_uri()?;
-        let resp = Request::get(&uri)
-            .header("Accept-Encoding", "gzip")
-            .header("Accept-Language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7")
-            .body(())?
-            .send()?
-            .text()?;
-        Ok(parse(&uri, &resp))
+        let url = format!("https://cn.bing.com/dict/search?q={input}&mkt=zh-cn");
+        let resp = ureq::get(&url)
+            .set("Accept-Encoding", "gzip")
+            .set("Accept-Language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7")
+            .call()?
+            .into_string()?;
+        Ok(parse(url, &resp))
     }
 }
 
-fn parse(url: &Uri, body: &str) -> Option<Translation> {
+fn parse(url: String, body: &str) -> Option<Translation> {
     let root = Html::parse_document(body);
     let content = get_element(
         &root,
@@ -47,7 +41,7 @@ fn parse(url: &Uri, body: &str) -> Option<Translation> {
     let prons = parse_pronounciations(content);
     let exps = parse_explanation(content);
     Some(
-        Translation::new(query, url.to_string())
+        Translation::new(query, url)
             .pronunciations(prons)
             .explanations(exps),
     )
