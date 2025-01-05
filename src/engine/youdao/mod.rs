@@ -1,8 +1,12 @@
+#[cfg(test)]
+mod test;
+
+use std::sync::LazyLock;
+
 use super::*;
 use itertools::Itertools;
 use regex::Regex;
 use scraper::{ElementRef, Html, Selector};
-use structopt::lazy_static::lazy_static;
 
 #[derive(Clone)]
 pub struct Translator;
@@ -60,10 +64,8 @@ fn parse_phrases(content: ElementRef) -> Vec<(String, Vec<String>)> {
 }
 
 fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
-    lazy_static! {
-        static ref RE_US: Regex = Regex::new(r"\s*美\s*\[(.*?)]").unwrap();
-        static ref RE_UK: Regex = Regex::new(r"\s*英\s*\[(.*?)]").unwrap();
-    }
+    static RE_US: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\s*美\s*\[(.*?)]").unwrap());
+    static RE_UK: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\s*英\s*\[(.*?)]").unwrap());
     let mut prons = vec![];
     let pron_selector = Selector::parse("#phrsListTab > h2 > div.baav > .pronounce").unwrap();
     let audio_selector = Selector::parse("a.dictvoice").unwrap();
@@ -100,9 +102,8 @@ fn parse_explanation(detail: ElementRef) -> Vec<Explanation> {
 }
 
 fn parse_explanation_en(detail: ElementRef) -> Vec<Explanation> {
-    lazy_static! {
-        static ref RE_EXP: Regex = Regex::new(r#"(?P<pos>\w+\.)?(?P<exp>.*)"#).unwrap();
-    }
+    static RE_EXP: LazyLock<Regex> =
+        LazyLock::new(|| Regex::new(r#"(?P<pos>\w+\.)?(?P<exp>.*)"#).unwrap());
     let selector = Selector::parse("#phrsListTab > div.trans-container > ul > li").unwrap();
     let mut exps = vec![];
     for li in detail.select(&selector) {

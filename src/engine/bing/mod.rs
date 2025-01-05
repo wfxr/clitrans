@@ -1,7 +1,11 @@
+#[cfg(test)]
+mod test;
+
+use std::sync::LazyLock;
+
 use super::*;
 use regex::Regex;
 use scraper::{ElementRef, Html, Selector};
-use structopt::lazy_static::lazy_static;
 
 #[derive(Clone)]
 pub struct Translator;
@@ -50,12 +54,10 @@ fn parse(url: &Uri, body: &str) -> Option<Translation> {
 }
 
 fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
-    lazy_static! {
-        static ref RE_PY: Regex = Regex::new(r"\[(.*?)]").unwrap();
-        static ref RE_US: Regex = Regex::new(r"US\s*\[(.*?)]").unwrap();
-        static ref RE_UK: Regex = Regex::new(r"UK\s*\[(.*?)]").unwrap();
-        static ref RE_MP3: Regex = Regex::new("https?://.*?.mp3").unwrap();
-    }
+    static RE_PY: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\[(.*?)]").unwrap());
+    static RE_US: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"US\s*\[(.*?)]").unwrap());
+    static RE_UK: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"UK\s*\[(.*?)]").unwrap());
+    static RE_MP3: LazyLock<Regex> = LazyLock::new(|| Regex::new("https?://.*?.mp3").unwrap());
     let mut prons = vec![];
     let selector = Selector::parse(".hd_p1_1").unwrap();
     if let Some(node) = detail.select(&selector).next() {

@@ -1,6 +1,7 @@
 //! Generated file, do not edit by hand, see `/build.rs`
 
-use clitrans::{engine::youdao::Translator, Translate, Translation};
+use super::Translator;
+use crate::{Translate, Translation};
 #[test]
 fn cn_word() {
     let trans = Translator;

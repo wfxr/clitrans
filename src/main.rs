@@ -1,16 +1,28 @@
 mod cli;
+mod engine;
+mod translation;
+mod util;
 
-use anyhow::{bail, Result};
-use cli::*;
-use clitrans::{engine::*, Layout, Translate, Translation};
+use anyhow::{bail, Context as _, Result};
+use clap::{CommandFactory as _, Parser as _, ValueEnum};
+use clap_complete::{generate, generate_to, Shell};
+use cli::{Engine, Opt, SubCommand};
+use engine::*;
 use rustyline::{error::ReadlineError, DefaultEditor};
-use std::{
-    collections::HashSet,
-    io::{self, stdout},
-    process,
-    sync::mpsc,
-    thread,
-};
+use std::{collections::HashSet, io, process, sync::mpsc, thread};
+use translation::Translation;
+use util::build;
+
+pub trait Translate: Send + Clone {
+    fn translate(&self, text: &str) -> Result<Option<Translation>>;
+}
+
+#[derive(Debug, Clone)]
+pub struct Layout {
+    pub explanations: usize,
+    pub phonetics:    usize,
+    pub phrases:      usize,
+}
 
 fn main() {
     match try_main() {
@@ -30,10 +42,31 @@ fn main() {
 }
 
 fn try_main() -> Result<i32> {
-    let opts: Opts = Opts::from_args();
+    let opts: Opt = Opt::parse();
     match opts.subcommand {
-        Some(Subcommand::Completion(CompletionOpt { shell })) => {
-            Opts::clap().gen_completions_to(env!("CARGO_PKG_NAME"), shell, &mut stdout());
+        Some(SubCommand::Completions { shell, dir, list }) => {
+            let cmd = &mut Opt::command();
+            if list {
+                for shell in Shell::value_variants() {
+                    println!("{}", shell);
+                }
+            } else {
+                let shell = shell.context("shell not specified")?;
+                match dir {
+                    Some(dir) => {
+                        generate_to(shell, cmd, cmd.get_name().to_string(), dir)?;
+                    }
+                    None => generate(
+                        shell,
+                        cmd,
+                        cmd.get_name().to_string(),
+                        &mut std::io::stdout(),
+                    ),
+                }
+            }
+        }
+        Some(SubCommand::Version) => {
+            println!("{} {}", build::CRATE_NAME, build::CRATE_VERBOSE_VERSION);
         }
         None => {
             let layout = Layout {
@@ -64,7 +97,7 @@ fn try_main() -> Result<i32> {
     Ok(0)
 }
 
-fn translate(query: &str, opts: &Opts, layout: &Layout) -> Result<()> {
+fn translate(query: &str, opts: &Opt, layout: &Layout) -> Result<()> {
     let (tx, rx) = mpsc::channel();
     let engines: HashSet<_> = opts.engines.iter().cloned().collect();
     let n = engines.len();
@@ -73,8 +106,8 @@ fn translate(query: &str, opts: &Opts, layout: &Layout) -> Result<()> {
         let query = query.to_string();
         thread::spawn(move || {
             let trans = match engine {
-                Engine::bing => bing::Translator.translate(&query),
-                Engine::youdao => youdao::Translator.translate(&query),
+                Engine::Bing => bing::Translator.translate(&query),
+                Engine::Youdao => youdao::Translator.translate(&query),
             };
             tx.send((n - id, trans)) // ignore errors since the receiver may be deallocated
         });
@@ -94,7 +127,7 @@ fn translate(query: &str, opts: &Opts, layout: &Layout) -> Result<()> {
     Ok(())
 }
 
-fn print(trans: Translation, opts: &Opts, layout: &Layout) -> Result<()> {
+fn print(trans: Translation, opts: &Opt, layout: &Layout) -> Result<()> {
     trans.print(layout)?;
     match &opts.audio {
         Some(_tag) => {

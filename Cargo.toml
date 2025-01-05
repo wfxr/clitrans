@@ -39,10 +39,9 @@ anyhow = "1"
 cfg-if = "1"
 rustyline = "15"
 
-[dependencies.structopt]
-version = "0.3"
-default-features = false
-features = ["wrap_help", "color"]
+clap = { version = "4", features = ["wrap_help", "derive", "env", "color"] }
+clap_complete = { version = "4" }
+constcat = "0.5"
 
 [target.'cfg(not(target_env = "musl"))'.dependencies.isahc]
 version = "1"
@@ -54,16 +53,11 @@ default-features = false
 features = ["text-decoding", "static-ssl"]
 
 [build-dependencies]
+anyhow = "1"
 quote = "1"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["raw_value"] }
 xshell = "0.2"
 
-[build-dependencies.structopt]
-version = "0.3"
-features = ["wrap_help"]
-default-features = false
-
 [profile.release]
 lto = true
-codegen-units = 1

@@ -81,6 +81,8 @@ pub enum ExpTag {
 impl Translation {
     #[cfg(feature = "audio")]
     pub fn play_audio(&self, tag: &str) -> Result<()> {
+        use anyhow::bail;
+
         match self
             .prons
             .iter()
