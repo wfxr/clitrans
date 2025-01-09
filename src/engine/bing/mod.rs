@@ -6,14 +6,15 @@ use std::sync::LazyLock;
 use super::*;
 use regex::Regex;
 use scraper::{ElementRef, Html, Selector};
+use url::Url;
 
 #[derive(Clone)]
 pub struct Translator;
 
 impl Translate for Translator {
     fn translate(&self, input: &str) -> Result<Option<Translation>> {
-        let url = format!("https://cn.bing.com/dict/search?q={input}&mkt=zh-cn");
-        let resp = ureq::get(&url)
+        let url: Url = format!("https://cn.bing.com/dict/search?q={input}&mkt=zh-cn").parse()?;
+        let resp = ureq::request_url("GET", &url)
             .set("Accept-Encoding", "gzip")
             .set("Accept-Language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7")
             .call()?
@@ -22,7 +23,7 @@ impl Translate for Translator {
     }
 }
 
-fn parse(url: String, body: &str) -> Option<Translation> {
+fn parse(url: Url, body: &str) -> Option<Translation> {
     let root = Html::parse_document(body);
     let content = get_element(
         &root,
@@ -41,7 +42,7 @@ fn parse(url: String, body: &str) -> Option<Translation> {
     let prons = parse_pronounciations(content);
     let exps = parse_explanation(content);
     Some(
-        Translation::new(query, url)
+        Translation::new(query, url.to_string())
             .pronunciations(prons)
             .explanations(exps),
     )

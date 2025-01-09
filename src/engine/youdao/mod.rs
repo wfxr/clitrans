@@ -7,14 +7,15 @@ use super::*;
 use itertools::Itertools;
 use regex::Regex;
 use scraper::{ElementRef, Html, Selector};
+use url::Url;
 
 #[derive(Clone)]
 pub struct Translator;
 
 impl Translate for Translator {
     fn translate(&self, query: &str) -> Result<Option<Translation>> {
-        let url = format!("http://dict.youdao.com/w/{query}");
-        let resp = ureq::get(&url)
+        let url: Url = format!("http://dict.youdao.com/w/{query}").parse()?;
+        let resp = ureq::request_url("GET", &url)
             .set("Accept-Encoding", "gzip")
             .set("Accept-Language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7")
             .call()?
@@ -23,7 +24,7 @@ impl Translate for Translator {
     }
 }
 
-fn parse(url: String, body: &str) -> Option<Translation> {
+fn parse(url: Url, body: &str) -> Option<Translation> {
     let root = Html::parse_document(body);
     let content = get_element(&root, "#results-contents")?;
     let query = get_text(content, "#phrsListTab > h2 > .keyword")
@@ -38,7 +39,7 @@ fn parse(url: String, body: &str) -> Option<Translation> {
     let exps = parse_explanation(content);
     let phrases = parse_phrases(content);
     Some(
-        Translation::new(query, url)
+        Translation::new(query, url.to_string())
             .pronunciations(prons)
             .explanations(exps)
             .phrases(phrases),
