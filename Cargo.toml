@@ -39,7 +39,7 @@ cfg-if = "1"
 rustyline = "15"
 clap = { version = "4", features = ["wrap_help", "derive", "env", "color"] }
 clap_complete = { version = "4" }
-constcat = "0.5"
+constcat = "0.6"
 ureq = { version = "2", features = ["proxy-from-env", "json", "socks-proxy"] }
 
 [build-dependencies]
