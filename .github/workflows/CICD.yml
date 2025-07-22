@@ -24,7 +24,7 @@ jobs:
 
     steps:
     - name: Git checkout
-      uses: actions/checkout@v1
+      uses: actions/checkout@v4
     - name: Install prerequisites
       shell: bash
       run: |
@@ -128,21 +128,10 @@ jobs:
         mkdir -p '${{ steps.vars.outputs.STAGING }}/${{ steps.vars.outputs.PKG_BASENAME }}'
         mkdir -p '${{ steps.vars.outputs.STAGING }}/${{ steps.vars.outputs.PKG_BASENAME }}/completions'
         mkdir -p '${{ steps.vars.outputs.STAGING }}/dpkg'
-    - name: Cache
-      uses: actions/cache@v2
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@nightly
       with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          target
-        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-    - name: Setup Toolchain
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: ${{ steps.vars.outputs.TOOLCHAIN }}
-        target: ${{ matrix.job.target }}
-        components: rustfmt
-        default: true
+        targets: ${{ matrix.job.target }}
     - name: Info
       shell: bash
       run: |
@@ -289,7 +278,7 @@ jobs:
           fakeroot dpkg-deb --build "${DPKG_DIR}" "${{ steps.vars.outputs.STAGING }}/${{ steps.vars.outputs.DPKG_NAME }}"
         fi
     - name: Publish archives and packages
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       if: steps.vars.outputs.DEPLOY
       with:
         files: |
