@@ -29,7 +29,7 @@ audio = ["rodio"]
 colored = "2"
 itertools = "0.14"
 regex = "1"
-scraper = "0.22"
+scraper = "0.23"
 url = "2.5"
 rodio = { version = "0.21", optional = true }
 serde = { version = "1", features = ["derive"] }
