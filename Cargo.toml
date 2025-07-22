@@ -26,7 +26,7 @@ full = ["audio"]
 audio = ["rodio"]
 
 [dependencies]
-colored = "2"
+colored = "3"
 itertools = "0.14"
 regex = "1"
 scraper = "0.22"
