@@ -1,10 +1,7 @@
 #[cfg(test)]
 mod test;
 
-use std::sync::LazyLock;
-
-use super::*;
-use regex::Regex;
+use super::{super::regex, *};
 use scraper::{ElementRef, Html, Selector};
 use url::Url;
 
@@ -49,16 +46,16 @@ fn parse(url: Url, body: &str) -> Option<Translation> {
 }
 
 fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
-    static RE_PY: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\[(.*?)]").unwrap());
-    static RE_US: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"US\s*\[(.*?)]").unwrap());
-    static RE_UK: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"UK\s*\[(.*?)]").unwrap());
-    static RE_MP3: LazyLock<Regex> = LazyLock::new(|| Regex::new("https?://.*?.mp3").unwrap());
+    let re_py = regex!(r"\[(.*?)]");
+    let re_us = regex!(r"US\s*\[(.*?)]");
+    let re_uk = regex!(r"UK\s*\[(.*?)]");
+    let re_mp3 = regex!(r"https?://.*?.mp3");
     let mut prons = vec![];
     let selector = Selector::parse(".hd_p1_1").unwrap();
     if let Some(node) = detail.select(&selector).next() {
         if node.children().count() == 1 {
             let pron: String = node.text().collect();
-            if let Some(caps) = RE_PY.captures(&pron) {
+            if let Some(caps) = re_py.captures(&pron) {
                 prons.push(Pronunciation::pinyin(caps[1].to_owned()));
             }
         } else {
@@ -73,15 +70,15 @@ fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
                             .unwrap()
                             .attr("onclick")
                             .and_then(|s| {
-                                RE_MP3
+                                re_mp3
                                     .captures(s)
                                     .and_then(|caps| caps.get(0).map(|url| url.as_str().to_owned()))
                             })
                     })
                 });
-                if let Some(caps) = RE_US.captures(&pron) {
+                if let Some(caps) = re_us.captures(&pron) {
                     prons.push(Pronunciation::us(caps[1].to_owned()).audio(audio));
-                } else if let Some(caps) = RE_UK.captures(&pron) {
+                } else if let Some(caps) = re_uk.captures(&pron) {
                     prons.push(Pronunciation::uk(caps[1].to_owned()).audio(audio));
                 }
             }

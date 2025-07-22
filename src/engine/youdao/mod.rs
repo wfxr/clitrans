@@ -3,7 +3,7 @@ mod test;
 
 use std::sync::LazyLock;
 
-use super::*;
+use super::{super::regex, *};
 use itertools::Itertools;
 use regex::Regex;
 use scraper::{ElementRef, Html, Selector};
@@ -64,8 +64,8 @@ fn parse_phrases(content: ElementRef) -> Vec<(String, Vec<String>)> {
 }
 
 fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
-    static RE_US: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\s*美\s*\[(.*?)]").unwrap());
-    static RE_UK: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\s*英\s*\[(.*?)]").unwrap());
+    let re_us = regex!(r"\s*美\s*\[(.*?)]");
+    let re_uk = regex!(r"\s*英\s*\[(.*?)]");
     let mut prons = vec![];
     let pron_selector = Selector::parse("#phrsListTab > h2 > div.baav > .pronounce").unwrap();
     let audio_selector = Selector::parse("a.dictvoice").unwrap();
@@ -76,9 +76,9 @@ fn parse_pronounciations(detail: ElementRef) -> Vec<Pronunciation> {
             .next()
             .and_then(|a| a.value().attr("data-rel"))
             .map(|data_rel| format!("https://dict.youdao.com/dictvoice?audio={data_rel}"));
-        if let Some(caps) = RE_US.captures(&text) {
+        if let Some(caps) = re_us.captures(&text) {
             prons.push(Pronunciation::us(caps[1].to_owned()).audio(audio));
-        } else if let Some(caps) = RE_UK.captures(&text) {
+        } else if let Some(caps) = re_uk.captures(&text) {
             prons.push(Pronunciation::uk(caps[1].to_owned()).audio(audio));
         }
     }
