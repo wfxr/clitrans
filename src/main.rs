@@ -34,7 +34,7 @@ fn main() {
             }
             eprintln!();
             eprintln!("Messages:");
-            eprintln!("  * {}", e);
+            eprintln!("  * {e}");
             process::exit(1);
         }
         Ok(code) => process::exit(code),
@@ -48,7 +48,7 @@ fn try_main() -> Result<i32> {
             let cmd = &mut Opt::command();
             if list {
                 for shell in Shell::value_variants() {
-                    println!("{}", shell);
+                    println!("{shell}");
                 }
             } else {
                 let shell = shell.context("shell not specified")?;

@@ -151,7 +151,7 @@ fn reformat(text: &str) -> Result<String> {
 
 fn gen_tests() -> Result<()> {
     for key in &["bing", "youdao"] {
-        let test_data = fs::read_to_string(format!("./src/engine/{}/test_data.json", key))?;
+        let test_data = fs::read_to_string(format!("./src/engine/{key}/test_data.json"))?;
         let test_data: Vec<TestData> = serde_json::from_str(&test_data)?;
         if !test_data.is_empty() {
             let mut buf = BufWriter::new(Vec::new());
@@ -183,10 +183,10 @@ fn gen_tests() -> Result<()> {
                     }
                 };
                 let test_fn = test_fn.to_string().replace("{#expect}", &expect);
-                writeln!(&mut buf, "{}", test_fn)?;
+                writeln!(&mut buf, "{test_fn}")?;
             }
             let text = reformat(&String::from_utf8(buf.into_inner()?)?)?;
-            fs::write(format!("./src/engine/{}/test.rs", key), text)?;
+            fs::write(format!("./src/engine/{key}/test.rs"), text)?;
         }
     }
     Ok(())

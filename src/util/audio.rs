@@ -17,11 +17,10 @@ pub fn play_audio(url: &str) -> anyhow::Result<()> {
         .take(len as u64)
         .read_to_end(&mut bytes)?;
 
-    let cursor = Cursor::new(bytes);
-    let source = rodio::Decoder::new(cursor)?;
-    let (_stream, handle) = rodio::OutputStream::try_default()?;
-    let sink = rodio::Sink::try_new(&handle)?;
-    sink.append(source);
+    let stream_handle = rodio::OutputStreamBuilder::open_default_stream()
+        .context("Failed to open default audio stream")?;
+    let input = Cursor::new(bytes);
+    let sink = rodio::play(stream_handle.mixer(), input).context("Failed to play audio")?;
     sink.sleep_until_end();
     Ok(())
 }

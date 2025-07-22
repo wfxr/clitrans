@@ -150,7 +150,7 @@ impl Translation {
                 .unique()
                 .map(|s| format!("/{}/", s.yellow()))
                 .join(", ");
-            return writeln!(io::stdout().lock(), "{}", buf);
+            return writeln!(io::stdout().lock(), "{buf}");
         }
         Ok(())
     }
@@ -182,7 +182,7 @@ impl Translation {
                         .join("\n")
                 })
                 .join("\n\n");
-            return writeln!(io::stdout().lock(), "\n{}", buf);
+            return writeln!(io::stdout().lock(), "\n{buf}");
         }
         Ok(())
     }
