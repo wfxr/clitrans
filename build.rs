@@ -11,7 +11,7 @@ use std::{
 };
 use xshell::cmd;
 
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
 
 fn main() -> Result<()> {
     print_git_envs().context("failed to fetch Git information")?;

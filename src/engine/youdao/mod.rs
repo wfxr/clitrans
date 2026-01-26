@@ -106,19 +106,19 @@ fn parse_explanation_en(detail: ElementRef) -> Vec<Explanation> {
     let mut exps = vec![];
     for li in detail.select(&selector) {
         let text: String = li.text().collect();
-        if let Some(caps) = RE_EXP.captures(&text) {
-            if let Some(exp) = caps.name("exp") {
-                let tag = caps
-                    .name("pos")
-                    .map(|pos| ExpTag::Pos(pos.as_str().trim().to_owned()))
-                    .unwrap_or(ExpTag::Phrase);
-                let items = exp
-                    .as_str()
-                    .split(&['；', ';'][..])
-                    .map(|v| v.trim().to_owned())
-                    .collect();
-                exps.push(Explanation { tag, items });
-            }
+        if let Some(caps) = RE_EXP.captures(&text)
+            && let Some(exp) = caps.name("exp")
+        {
+            let tag = caps
+                .name("pos")
+                .map(|pos| ExpTag::Pos(pos.as_str().trim().to_owned()))
+                .unwrap_or(ExpTag::Phrase);
+            let items = exp
+                .as_str()
+                .split(&['；', ';'][..])
+                .map(|v| v.trim().to_owned())
+                .collect();
+            exps.push(Explanation { tag, items });
         }
     }
     exps

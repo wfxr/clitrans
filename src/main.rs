@@ -3,12 +3,12 @@ mod engine;
 mod translation;
 mod util;
 
-use anyhow::{bail, Context as _, Result};
+use anyhow::{Context as _, Result, bail};
 use clap::{CommandFactory as _, Parser as _, ValueEnum};
-use clap_complete::{generate, generate_to, Shell};
+use clap_complete::{Shell, generate, generate_to};
 use cli::{Engine, Opt, SubCommand};
 use engine::*;
-use rustyline::{error::ReadlineError, DefaultEditor};
+use rustyline::{DefaultEditor, error::ReadlineError};
 use std::{collections::HashSet, io, process, sync::mpsc, thread};
 use translation::Translation;
 use util::build;
@@ -27,10 +27,10 @@ pub struct Layout {
 fn main() {
     match try_main() {
         Err(e) => {
-            if let Some(ioerr) = e.root_cause().downcast_ref::<io::Error>() {
-                if ioerr.kind() == io::ErrorKind::BrokenPipe {
-                    std::process::exit(0);
-                }
+            if let Some(ioerr) = e.root_cause().downcast_ref::<io::Error>()
+                && ioerr.kind() == io::ErrorKind::BrokenPipe
+            {
+                std::process::exit(0);
             }
             eprintln!();
             eprintln!("Messages:");

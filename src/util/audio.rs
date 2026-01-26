@@ -1,6 +1,6 @@
 use std::io::{Cursor, Read};
 
-use anyhow::{ensure, Context as _};
+use anyhow::{Context as _, ensure};
 
 pub fn play_audio(url: &str) -> anyhow::Result<()> {
     let resp = ureq::get(url).call()?;

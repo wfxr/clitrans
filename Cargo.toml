@@ -13,7 +13,7 @@ keywords = [
 license = "MIT/Apache-2.0"
 exclude = ["/completions"]
 repository = "https://github.com/wfxr/clitrans"
-edition = "2018"
+edition = "2024"
 resolver = "2"
 
 build = "build.rs"
