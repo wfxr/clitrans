@@ -98,7 +98,7 @@ fn cn_phrase() {
                 {
                     "tag": "Machine",
                     "items": [
-                        "Hello, world"
+                        "Hello, World"
                     ]
                 },
                 {
