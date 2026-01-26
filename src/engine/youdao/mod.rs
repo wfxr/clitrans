@@ -15,11 +15,12 @@ pub struct Translator;
 impl Translate for Translator {
     fn translate(&self, query: &str) -> Result<Option<Translation>> {
         let url: Url = format!("http://dict.youdao.com/w/{query}").parse()?;
-        let resp = ureq::request_url("GET", &url)
-            .set("Accept-Encoding", "gzip")
-            .set("Accept-Language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7")
+        let resp = ureq::get(url.as_str())
+            .header("Accept-Encoding", "gzip")
+            .header("Accept-Language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7")
             .call()?
-            .into_string()?;
+            .into_body()
+            .read_to_string()?;
         Ok(parse(url, &resp))
     }
 }

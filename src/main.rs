@@ -109,7 +109,8 @@ fn translate(query: &str, opts: &Opt, layout: &Layout) -> Result<()> {
                 Engine::Bing => bing::Translator.translate(&query),
                 Engine::Youdao => youdao::Translator.translate(&query),
             };
-            tx.send((n - id, trans)) // ignore errors since the receiver may be deallocated
+            // ignore errors since the receiver may be deallocated
+            let _ = tx.send((n - id, trans));
         });
     }
     loop {

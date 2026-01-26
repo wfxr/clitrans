@@ -5,15 +5,19 @@ use anyhow::{ensure, Context as _};
 pub fn play_audio(url: &str) -> anyhow::Result<()> {
     let resp = ureq::get(url).call()?;
     let len: usize = resp
-        .header("Content-Length")
+        .headers()
+        .get("Content-Length")
         .context("Content-Length not found")?
+        .to_str()
+        .context("Content-Length is not valid UTF-8")?
         .parse()?;
 
     ensure!(len <= 16 * 1024 * 1024, "audio file too large: {len} bytes",);
 
     let mut bytes = Vec::with_capacity(len);
 
-    resp.into_reader()
+    resp.into_body()
+        .as_reader()
         .take(len as u64)
         .read_to_end(&mut bytes)?;
 

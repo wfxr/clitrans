@@ -26,21 +26,21 @@ full = ["audio"]
 audio = ["rodio"]
 
 [dependencies]
-colored = "2"
+colored = "3"
 itertools = "0.14"
 regex = "1"
-scraper = "0.22"
-url = "2.5"
+scraper = "0.25"
+url = "2"
 rodio = { version = "0.21", optional = true }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 anyhow = "1"
 cfg-if = "1"
-rustyline = "15"
+rustyline = "17"
 clap = { version = "4", features = ["wrap_help", "derive", "env", "color"] }
 clap_complete = { version = "4" }
 constcat = "0.6"
-ureq = { version = "2", features = ["proxy-from-env", "json", "socks-proxy"] }
+ureq = { version = "3", features = ["json", "socks-proxy"] }
 
 [build-dependencies]
 anyhow = "1"
