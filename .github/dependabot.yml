@@ -3,11 +3,8 @@ updates:
 - package-ecosystem: cargo
   directory: "/"
   schedule:
-    interval: daily
-    time: "21:00"
+    interval: monthly
   open-pull-requests-limit: 10
-  reviewers:
-  - wfxr
   labels:
   - dependencies
   commit-message:

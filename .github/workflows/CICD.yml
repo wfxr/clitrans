@@ -24,7 +24,7 @@ jobs:
 
     steps:
     - name: Git checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Install prerequisites
       shell: bash
       run: |
@@ -46,50 +46,37 @@ jobs:
         case ${{ matrix.job.target }} in *-pc-windows-gnu) TOOLCHAIN="${TOOLCHAIN}-${{ matrix.job.target }}" ;; esac;
         # * use requested TOOLCHAIN if specified
         if [ -n "${{ matrix.job.toolchain }}" ]; then TOOLCHAIN="${{ matrix.job.toolchain }}" ; fi
-        echo set-output name=TOOLCHAIN::${TOOLCHAIN}
-        echo ::set-output name=TOOLCHAIN::${TOOLCHAIN}
+        echo "TOOLCHAIN=${TOOLCHAIN}" >> $GITHUB_OUTPUT
         # staging directory
         STAGING='_staging'
-        echo set-output name=STAGING::${STAGING}
-        echo ::set-output name=STAGING::${STAGING}
+        echo "STAGING=${STAGING}" >> $GITHUB_OUTPUT
         # determine EXE suffix
         EXE_suffix="" ; case ${{ matrix.job.target }} in *-pc-windows-*) EXE_suffix=".exe" ;; esac;
-        echo set-output name=EXE_suffix::${EXE_suffix}
-        echo ::set-output name=EXE_suffix::${EXE_suffix}
+        echo "EXE_suffix=${EXE_suffix}" >> $GITHUB_OUTPUT
         # parse commit reference info
         REF_NAME=${GITHUB_REF#refs/*/}
         unset REF_BRANCH ; case ${GITHUB_REF} in refs/heads/*) REF_BRANCH=${GITHUB_REF#refs/heads/} ;; esac;
         unset REF_TAG ; case ${GITHUB_REF} in refs/tags/*) REF_TAG=${GITHUB_REF#refs/tags/} ;; esac;
         REF_SHAS=${GITHUB_SHA:0:8}
-        echo set-output name=REF_NAME::${REF_NAME}
-        echo set-output name=REF_BRANCH::${REF_BRANCH}
-        echo set-output name=REF_TAG::${REF_TAG}
-        echo set-output name=REF_SHAS::${REF_SHAS}
-        echo ::set-output name=REF_NAME::${REF_NAME}
-        echo ::set-output name=REF_BRANCH::${REF_BRANCH}
-        echo ::set-output name=REF_TAG::${REF_TAG}
-        echo ::set-output name=REF_SHAS::${REF_SHAS}
+        echo "REF_NAME=${REF_NAME}" >> $GITHUB_OUTPUT
+        echo "REF_BRANCH=${REF_BRANCH}" >> $GITHUB_OUTPUT
+        echo "REF_TAG=${REF_TAG}" >> $GITHUB_OUTPUT
+        echo "REF_SHAS=${REF_SHAS}" >> $GITHUB_OUTPUT
         # parse target
-        unset TARGET_ARCH ; case ${{ matrix.job.target }} in arm-unknown-linux-gnueabihf) TARGET_ARCH=arm ;; i686-*) TARGET_ARCH=i686 ;; x86_64-*) TARGET_ARCH=x86_64 ;; esac;
-        echo set-output name=TARGET_ARCH::${TARGET_ARCH}
-        echo ::set-output name=TARGET_ARCH::${TARGET_ARCH}
+        unset TARGET_ARCH ; case ${{ matrix.job.target }} in arm-unknown-linux-gnueabihf) TARGET_ARCH=arm ;; i686-*) TARGET_ARCH=i686 ;; x86_64-*) TARGET_ARCH=x86_64 ;; aarch64-*) TARGET_ARCH=aarch64 ;; esac;
+        echo "TARGET_ARCH=${TARGET_ARCH}" >> $GITHUB_OUTPUT
         unset TARGET_OS ; case ${{ matrix.job.target }} in *-linux-*) TARGET_OS=linux ;; *-apple-*) TARGET_OS=macos ;; *-windows-*) TARGET_OS=windows ;; esac;
-        echo set-output name=TARGET_OS::${TARGET_OS}
-        echo ::set-output name=TARGET_OS::${TARGET_OS}
+        echo "TARGET_OS=${TARGET_OS}" >> $GITHUB_OUTPUT
         # package name
         PKG_suffix=".tar.gz" ; case ${{ matrix.job.target }} in *-pc-windows-*) PKG_suffix=".zip" ;; esac;
         PKG_BASENAME=${PROJECT_NAME}-${REF_TAG:-$REF_SHAS}-${{ matrix.job.target }}
         PKG_NAME=${PKG_BASENAME}${PKG_suffix}
-        echo set-output name=PKG_suffix::${PKG_suffix}
-        echo set-output name=PKG_BASENAME::${PKG_BASENAME}
-        echo set-output name=PKG_NAME::${PKG_NAME}
-        echo ::set-output name=PKG_suffix::${PKG_suffix}
-        echo ::set-output name=PKG_BASENAME::${PKG_BASENAME}
-        echo ::set-output name=PKG_NAME::${PKG_NAME}
+        echo "PKG_suffix=${PKG_suffix}" >> $GITHUB_OUTPUT
+        echo "PKG_BASENAME=${PKG_BASENAME}" >> $GITHUB_OUTPUT
+        echo "PKG_NAME=${PKG_NAME}" >> $GITHUB_OUTPUT
         # deployable tag? (ie, leading "vM" or "M"; M == version number)
         unset DEPLOY ; if [[ $REF_TAG =~ ^[vV]?[0-9].* ]]; then DEPLOY='true' ; fi
-        echo set-output name=DEPLOY::${DEPLOY:-<empty>/false}
-        echo ::set-output name=DEPLOY::${DEPLOY}
+        echo "DEPLOY=${DEPLOY}" >> $GITHUB_OUTPUT
         # DPKG architecture?
         unset DPKG_ARCH
         case ${{ matrix.job.target }} in
@@ -98,29 +85,23 @@ jobs:
           i686-*-linux-*) DPKG_ARCH=i686 ;;
           x86_64-*-linux-*) DPKG_ARCH=amd64 ;;
         esac;
-        echo set-output name=DPKG_ARCH::${DPKG_ARCH}
-        echo ::set-output name=DPKG_ARCH::${DPKG_ARCH}
+        echo "DPKG_ARCH=${DPKG_ARCH}" >> $GITHUB_OUTPUT
         # DPKG version?
         unset DPKG_VERSION ; if [[ $REF_TAG =~ ^[vV]?[0-9].* ]]; then DPKG_VERSION=${REF_TAG/#[vV]/} ; fi
-        echo set-output name=DPKG_VERSION::${DPKG_VERSION}
-        echo ::set-output name=DPKG_VERSION::${DPKG_VERSION}
+        echo "DPKG_VERSION=${DPKG_VERSION}" >> $GITHUB_OUTPUT
         # DPKG base name/conflicts?
         DPKG_BASENAME=${PROJECT_NAME}
         DPKG_CONFLICTS=${PROJECT_NAME}-musl
         case ${{ matrix.job.target }} in *-musl) DPKG_BASENAME=${PROJECT_NAME}-musl ; DPKG_CONFLICTS=${PROJECT_NAME} ;; esac;
-        echo set-output name=DPKG_BASENAME::${DPKG_BASENAME}
-        echo set-output name=DPKG_CONFLICTS::${DPKG_CONFLICTS}
-        echo ::set-output name=DPKG_BASENAME::${DPKG_BASENAME}
-        echo ::set-output name=DPKG_CONFLICTS::${DPKG_CONFLICTS}
+        echo "DPKG_BASENAME=${DPKG_BASENAME}" >> $GITHUB_OUTPUT
+        echo "DPKG_CONFLICTS=${DPKG_CONFLICTS}" >> $GITHUB_OUTPUT
         # DPKG name
         unset DPKG_NAME;
         if [[ -n $DPKG_ARCH && -n $DPKG_VERSION ]]; then DPKG_NAME="${DPKG_BASENAME}_${DPKG_VERSION}_${DPKG_ARCH}.deb" ; fi
-        echo set-output name=DPKG_NAME::${DPKG_NAME}
-        echo ::set-output name=DPKG_NAME::${DPKG_NAME}
+        echo "DPKG_NAME=${DPKG_NAME}" >> $GITHUB_OUTPUT
         # * executable for `strip`?
         STRIP="strip" ; case ${{ matrix.job.target }} in arm-unknown-linux-gnueabihf) STRIP="arm-linux-gnueabihf-strip" ;; aarch64-unknown-linux-gnu) STRIP="aarch64-linux-gnu-strip" ;; *-pc-windows-msvc) STRIP="" ;; esac;
-        echo set-output name=STRIP::${STRIP}
-        echo ::set-output name=STRIP::${STRIP}
+        echo "STRIP=${STRIP}" >> $GITHUB_OUTPUT
     - name: Create all needed build/work directories
       shell: bash
       run: |
@@ -160,7 +141,7 @@ jobs:
           ${{ steps.vars.outputs.STRIP }} 'target/${{ matrix.job.target }}/release/${{ env.PROJECT_NAME }}${{ steps.vars.outputs.EXE_suffix }}'
         fi
     - name: Upload build artifacts
-      uses: actions/upload-artifact@master
+      uses: actions/upload-artifact@v6
       with:
         name: ${{ env.PROJECT_NAME }}-${{ matrix.job.target }}
         path: target/${{ matrix.job.target }}/release/${{ env.PROJECT_NAME }}${{ steps.vars.outputs.EXE_suffix }}
