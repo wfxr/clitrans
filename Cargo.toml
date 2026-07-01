@@ -27,7 +27,7 @@ audio = ["rodio"]
 
 [dependencies]
 colored = "3"
-itertools = "0.14"
+itertools = "0.15"
 regex = "1"
 scraper = "0.26"
 url = "2"
